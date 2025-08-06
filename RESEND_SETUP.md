@@ -1,68 +1,99 @@
 # Configuración de Resend para Emails Automáticos
 
-## 🚀 Paso 1: Crear cuenta en Resend
+## 1. Crear cuenta en Resend
 
-1. **Ve a [resend.com](https://resend.com)**
-2. **Crea una cuenta gratuita**
-3. **Verifica tu email**
+1. Ve a [resend.com](https://resend.com)
+2. Crea una cuenta gratuita (100 emails/día gratis)
+3. Verifica tu dominio o usa el dominio de prueba
 
-## 🔑 Paso 2: Obtener API Key
+## 2. Obtener API Key
 
-1. **En el dashboard de Resend, ve a "API Keys"**
-2. **Crea una nueva API Key**
-3. **Copia la clave** (empieza con `re_`)
+1. En el dashboard de Resend, ve a **API Keys**
+2. Crea una nueva API Key
+3. Copia la clave (empieza con `re_`)
 
-## 📧 Paso 3: Configurar Dominio (Opcional)
+## 3. Configurar en Supabase
 
-Para emails más profesionales:
-1. **Ve a "Domains" en Resend**
-2. **Agrega tu dominio** (ej: `finnvest.com`)
-3. **Configura los registros DNS** que te indique Resend
+### Opción A: Usando Supabase CLI
 
-## 🔧 Paso 4: Configurar Supabase Edge Function
-
-### 4.1 Instalar Supabase CLI
 ```bash
+# Instalar Supabase CLI si no lo tienes
 npm install -g supabase
-```
 
-### 4.2 Iniciar sesión en Supabase
-```bash
+# Login a Supabase
 supabase login
-```
 
-### 4.3 Conectar a tu proyecto
-```bash
-supabase link --project-ref TU_PROJECT_ID
-```
+# Link tu proyecto
+supabase link --project-ref TU_PROJECT_REF
 
-### 4.4 Crear la Edge Function
-```bash
-supabase functions new send-welcome-email
-```
-
-### 4.5 Configurar variables de entorno
-```bash
+# Configurar variable de entorno
 supabase secrets set RESEND_API_KEY=re_tu_api_key_aqui
-```
 
-### 4.6 Desplegar la función
-```bash
+# Desplegar la Edge Function
 supabase functions deploy send-welcome-email
 ```
 
-## 🎯 Paso 5: Probar el Sistema
+### Opción B: Usando Dashboard de Supabase
 
-1. **Registra un email de prueba en tu sitio**
-2. **Verifica que llegue el email de bienvenida**
-3. **Revisa los logs en Supabase Dashboard**
+1. Ve a tu proyecto de Supabase
+2. Ve a **Settings** > **Edge Functions**
+3. En **Environment Variables**, agrega:
+   - **Key**: `RESEND_API_KEY`
+   - **Value**: `re_tu_api_key_aqui`
 
-## 📊 Monitoreo
+4. Ve a **Edge Functions** > **Create Function**
+5. Nombre: `send-welcome-email`
+6. Copia el código de `supabase/functions/send-welcome-email/index.ts`
+7. Haz clic en **Deploy**
 
-- **Resend Dashboard:** Ver estadísticas de envío
-- **Supabase Dashboard:** Ver logs de la función
-- **Spam Folder:** Verificar que no vaya a spam
+## 4. Verificar configuración
 
----
+1. Ve a **Edge Functions** en Supabase
+2. Deberías ver `send-welcome-email` en la lista
+3. El estado debe ser "Active"
 
-**¡Con esto tendrás emails automáticos funcionando! 🎉** 
+## 5. Probar el email
+
+1. Registra un email en tu landing page
+2. Deberías recibir el email de bienvenida
+3. Verifica en **Logs** de Supabase si hay errores
+
+## 6. Personalizar el email
+
+Edita el archivo `supabase/functions/send-welcome-email/index.ts` para:
+- Cambiar el diseño del email
+- Modificar el contenido
+- Agregar tu logo
+- Cambiar colores
+
+## 7. Monitoreo
+
+- **Resend Dashboard**: Ve emails enviados, entregados, etc.
+- **Supabase Logs**: Ve errores de la Edge Function
+- **Analytics**: Track engagement de emails
+
+## 8. Troubleshooting
+
+### Error: "RESEND_API_KEY not configured"
+- Verifica que la variable de entorno esté configurada
+- Reinicia la Edge Function
+
+### Error: "Failed to send email"
+- Verifica que la API Key sea válida
+- Asegúrate de que el dominio esté verificado en Resend
+
+### Error: "CORS policy"
+- La Edge Function ya incluye headers CORS
+- Verifica que esté desplegada correctamente
+
+## 9. Costos
+
+- **Resend**: 100 emails/día gratis, luego $0.80/1000 emails
+- **Supabase**: Edge Functions incluidas en el plan gratuito
+
+## 10. Próximos pasos
+
+- Configurar templates de email más avanzados
+- Agregar tracking de apertura
+- Implementar emails de seguimiento
+- Configurar listas de distribución 
