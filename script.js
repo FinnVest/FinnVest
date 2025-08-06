@@ -803,7 +803,7 @@ function showAlreadyRegisteredModal(email) {
     modalIcon.className = 'fas fa-user-check';
     modalIcon.parentElement.style.background = 'linear-gradient(135deg, #10b981 0%, #059669 100%)';
     modalTitle.textContent = '¡Ya estás registrado! 🎉';
-    modalMessage.textContent = '¡Genial! Ya tienes tu lugar reservado. Lo mejor está por venir, mantente atento a tu correo.';
+    modalMessage.textContent = '¡Genial! Ya tienes tu lugar reservado. Lo mejor está por venir, mantente atento a tu correo. 📧 <strong>Consejo:</strong> Revisa tu carpeta de spam si no has recibido nuestros emails anteriores.';
     modalEmail.textContent = email;
     modalEmail.style.display = 'block';
     
@@ -830,7 +830,7 @@ function showEmailInfo() {
     const originalText = infoBtn.innerHTML;
     
     // Cambiar mensaje
-    modalMessage.textContent = 'Te notificaremos por email cuando lancemos la plataforma. También puedes seguirnos en redes sociales para estar al día con las novedades.';
+    modalMessage.textContent = 'Te notificaremos por email cuando lancemos la plataforma. También puedes seguirnos en redes sociales para estar al día con las novedades. 📧 <strong>Consejo:</strong> Revisa tu carpeta de spam si no has recibido nuestros emails anteriores.';
     
     // Cambiar botón
     infoBtn.innerHTML = '<i class="fas fa-check"></i> Entendido';
@@ -840,7 +840,7 @@ function showEmailInfo() {
     setTimeout(() => {
         infoBtn.innerHTML = originalText;
         infoBtn.style.background = '';
-        modalMessage.textContent = '¡Genial! Ya tienes tu lugar reservado. Lo mejor está por venir, mantente atento a tu correo.';
+        modalMessage.textContent = '¡Genial! Ya tienes tu lugar reservado. Lo mejor está por venir, mantente atento a tu correo. 📧 <strong>Consejo:</strong> Revisa tu carpeta de spam si no has recibido nuestros emails anteriores.';
     }, 3000);
 }
 
