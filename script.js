@@ -448,38 +448,17 @@ async function joinWaitingList(event) {
     // Mostrar modal de carga
     showLoadingModal();
     
-    try {
-        // Verificar si el email ya existe
-        const emailCheck = await checkEmailExists(email);
-        
-        if (emailCheck.error) {
-            throw new Error(emailCheck.error);
-        }
-        
-        if (emailCheck.exists) {
-            hideLoadingModal();
-            showSuccessModal(email, '¡Ya estás en la lista! Te notificaremos cuando lancemos la plataforma.');
-            emailInput.value = '';
-        } else {
-            // Agregar a la waitlist
+            try {
+            // Agregar directamente a la waitlist (sin verificar duplicados por ahora)
             const result = await addToWaitlist(email);
             
             if (result.success) {
-                // Enviar email de bienvenida
-                const emailResult = await sendWelcomeEmail(email);
                 hideLoadingModal();
-                
-                if (emailResult.success) {
-                    showSuccessModal(email, '¡Gracias por unirte! Te hemos enviado un email de bienvenida con toda la información.');
-                } else {
-                    console.warn('Email de bienvenida no se pudo enviar:', emailResult.error);
-                    showSuccessModal(email, '¡Gracias por unirte! Te notificaremos cuando lancemos la plataforma.');
-                }
+                showSuccessModal(email, '¡Gracias por unirte! Te notificaremos cuando lancemos la plataforma.');
                 emailInput.value = '';
             } else {
                 throw new Error(result.error);
             }
-        }
         
     } catch (error) {
         console.error('Error:', error);
@@ -517,36 +496,15 @@ async function joinFinalWaitlist(event) {
     showLoadingModal();
     
     try {
-        // Verificar si el email ya existe
-        const emailCheck = await checkEmailExists(email);
+        // Agregar directamente a la waitlist (sin verificar duplicados por ahora)
+        const result = await addToWaitlist(email);
         
-        if (emailCheck.error) {
-            throw new Error(emailCheck.error);
-        }
-        
-        if (emailCheck.exists) {
+        if (result.success) {
             hideLoadingModal();
-            showSuccessModal(email, '¡Ya estás en la lista! Te enviaremos un email de confirmación.');
+            showSuccessModal(email, '¡Gracias por unirte! Te notificaremos cuando lancemos la plataforma.');
             emailInput.value = '';
         } else {
-            // Agregar a la waitlist
-            const result = await addToWaitlist(email);
-            
-            if (result.success) {
-                // Enviar email de bienvenida
-                const emailResult = await sendWelcomeEmail(email);
-                hideLoadingModal();
-                
-                if (emailResult.success) {
-                    showSuccessModal(email, '¡Gracias por unirte! Te hemos enviado un email de bienvenida con toda la información.');
-                } else {
-                    console.warn('Email de bienvenida no se pudo enviar:', emailResult.error);
-                    showSuccessModal(email, '¡Gracias por unirte! Te notificaremos cuando lancemos la plataforma.');
-                }
-                emailInput.value = '';
-            } else {
-                throw new Error(result.error);
-            }
+            throw new Error(result.error);
         }
         
     } catch (error) {
