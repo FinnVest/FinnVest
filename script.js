@@ -803,45 +803,20 @@ function showAlreadyRegisteredModal(email) {
     modalIcon.className = 'fas fa-user-check';
     modalIcon.parentElement.style.background = 'linear-gradient(135deg, #10b981 0%, #059669 100%)';
     modalTitle.textContent = '¡Ya estás registrado! 🎉';
-    modalMessage.textContent = '¡Genial! Ya tienes tu lugar reservado. Lo mejor está por venir, mantente atento a tu correo. 📧 <strong>Consejo:</strong> Revisa tu carpeta de spam si no has recibido nuestros emails anteriores.';
+    modalMessage.textContent = '¡Genial! Ya tienes tu lugar reservado. Lo mejor está por venir, mantente atento a tu correo. 📧 <strong>Consejo:</strong> Revisa tu carpeta de spam si no has recibido nuestros emails anteriores. Te notificaremos por email cuando lancemos la plataforma.';
     modalEmail.textContent = email;
     modalEmail.style.display = 'block';
     
-    // Cambiar botones
+    // Cambiar botones - solo un botón
     modalActions.innerHTML = `
         <button class="modal-btn modal-btn-primary" onclick="closeModal()">
             <i class="fas fa-check"></i>
             ¡Perfecto!
         </button>
-        <button class="modal-btn modal-btn-secondary" onclick="showEmailInfo()">
-            <i class="fas fa-info-circle"></i>
-            Más información
-        </button>
     `;
     
     modal.classList.add('show');
     document.body.style.overflow = 'hidden';
-}
-
-// Función para mostrar información adicional
-function showEmailInfo() {
-    const modalMessage = document.querySelector('.modal-message');
-    const infoBtn = document.querySelector('.modal-btn-secondary');
-    const originalText = infoBtn.innerHTML;
-    
-    // Cambiar mensaje
-    modalMessage.textContent = 'Te notificaremos por email cuando lancemos la plataforma. También puedes seguirnos en redes sociales para estar al día con las novedades. 📧 <strong>Consejo:</strong> Revisa tu carpeta de spam si no has recibido nuestros emails anteriores.';
-    
-    // Cambiar botón
-    infoBtn.innerHTML = '<i class="fas fa-check"></i> Entendido';
-    infoBtn.style.background = 'linear-gradient(135deg, #10b981 0%, #059669 100%)';
-    
-    // Restaurar después de 3 segundos
-    setTimeout(() => {
-        infoBtn.innerHTML = originalText;
-        infoBtn.style.background = '';
-        modalMessage.textContent = '¡Genial! Ya tienes tu lugar reservado. Lo mejor está por venir, mantente atento a tu correo. 📧 <strong>Consejo:</strong> Revisa tu carpeta de spam si no has recibido nuestros emails anteriores.';
-    }, 3000);
 }
 
 // Close modal when clicking outside
