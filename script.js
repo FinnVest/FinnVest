@@ -797,9 +797,9 @@ function showAlreadyRegisteredModal(email) {
             <i class="fas fa-check"></i>
             ¡Perfecto!
         </button>
-        <button class="modal-btn modal-btn-secondary" onclick="resendWelcomeEmail('${email}')">
-            <i class="fas fa-envelope"></i>
-            Reenviar email
+        <button class="modal-btn modal-btn-secondary" onclick="showEmailInfo()">
+            <i class="fas fa-info-circle"></i>
+            Más información
         </button>
     `;
     
@@ -807,53 +807,25 @@ function showAlreadyRegisteredModal(email) {
     document.body.style.overflow = 'hidden';
 }
 
-// Función para reenviar email de bienvenida
-async function resendWelcomeEmail(email) {
-    const resendBtn = document.querySelector('.modal-btn-secondary');
-    const originalText = resendBtn.innerHTML;
+// Función para mostrar información adicional
+function showEmailInfo() {
+    const modalMessage = document.querySelector('.modal-message');
+    const infoBtn = document.querySelector('.modal-btn-secondary');
+    const originalText = infoBtn.innerHTML;
     
-    // Cambiar botón a estado de carga
-    resendBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enviando...';
-    resendBtn.disabled = true;
+    // Cambiar mensaje
+    modalMessage.textContent = 'Te notificaremos por email cuando lancemos la plataforma. También puedes seguirnos en redes sociales para estar al día con las novedades.';
     
-    try {
-        const result = await sendWelcomeEmail(email);
-        
-        if (result.success) {
-            // Mostrar mensaje de éxito
-            const modalMessage = document.querySelector('.modal-message');
-            modalMessage.textContent = '¡Email reenviado exitosamente! Revisa tu bandeja de entrada.';
-            
-            // Cambiar botón a éxito
-            resendBtn.innerHTML = '<i class="fas fa-check"></i> ¡Enviado!';
-            resendBtn.style.background = 'linear-gradient(135deg, #10b981 0%, #059669 100%)';
-            
-            // Restaurar después de 3 segundos
-            setTimeout(() => {
-                resendBtn.innerHTML = originalText;
-                resendBtn.disabled = false;
-                resendBtn.style.background = '';
-                modalMessage.textContent = '¡Genial! Ya tienes tu lugar reservado. Lo mejor está por venir, mantente atento a tu correo.';
-            }, 3000);
-        } else {
-            throw new Error(result.error);
-        }
-    } catch (error) {
-        console.error('Error reenviando email:', error);
-        
-        // Mostrar mensaje de error
-        const modalMessage = document.querySelector('.modal-message');
-        modalMessage.textContent = 'No se pudo reenviar el email. Por favor intenta más tarde.';
-        
-        // Restaurar botón
-        resendBtn.innerHTML = originalText;
-        resendBtn.disabled = false;
-        
-        // Restaurar mensaje después de 3 segundos
-        setTimeout(() => {
-            modalMessage.textContent = '¡Genial! Ya tienes tu lugar reservado. Lo mejor está por venir, mantente atento a tu correo.';
-        }, 3000);
-    }
+    // Cambiar botón
+    infoBtn.innerHTML = '<i class="fas fa-check"></i> Entendido';
+    infoBtn.style.background = 'linear-gradient(135deg, #10b981 0%, #059669 100%)';
+    
+    // Restaurar después de 3 segundos
+    setTimeout(() => {
+        infoBtn.innerHTML = originalText;
+        infoBtn.style.background = '';
+        modalMessage.textContent = '¡Genial! Ya tienes tu lugar reservado. Lo mejor está por venir, mantente atento a tu correo.';
+    }, 3000);
 }
 
 // Close modal when clicking outside

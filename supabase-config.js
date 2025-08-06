@@ -107,25 +107,8 @@ async function getWaitlistStats() {
 
 // Email validation function moved to script.js to ensure availability
 
-// Función para enviar email de bienvenida
+// Función para enviar email de bienvenida (deshabilitada temporalmente)
 async function sendWelcomeEmail(email) {
-    if (!supabase) {
-        return { success: false, error: 'Supabase no está configurado correctamente' };
-    }
-    
-    try {
-        const { data, error } = await supabase.functions.invoke('send-welcome-email', {
-            body: { email: email }
-        });
-
-        if (error) {
-            console.error('Error sending welcome email:', error);
-            return { success: false, error: error.message };
-        }
-
-        return { success: true, data };
-    } catch (error) {
-        console.error('Error:', error);
-        return { success: false, error: error.message };
-    }
+    console.log('Email sending disabled - would send to:', email);
+    return { success: false, error: 'Email sending not configured' };
 } 
