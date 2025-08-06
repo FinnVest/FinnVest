@@ -3,22 +3,45 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
 }
 
 serve(async (req) => {
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
-    return new Response('ok', { headers: corsHeaders })
+    return new Response('ok', { 
+      headers: corsHeaders,
+      status: 200 
+    })
   }
 
   try {
+    console.log('Edge Function called')
+    
     const { email } = await req.json()
+    console.log('Email received:', email)
 
     if (!email) {
       throw new Error('Email is required')
     }
 
-    // Email template
+    // Check if RESEND_API_KEY is configured
+    const resendApiKey = Deno.env.get('RESEND_API_KEY')
+    if (!resendApiKey) {
+      console.error('RESEND_API_KEY not configured')
+      return new Response(
+        JSON.stringify({ 
+          success: false, 
+          error: 'Email service not configured. Please set RESEND_API_KEY.' 
+        }),
+        { 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          status: 500 
+        }
+      )
+    }
+
+    // Simple email template for testing
     const emailContent = `
       <!DOCTYPE html>
       <html>
@@ -47,20 +70,6 @@ serve(async (req) => {
               </ul>
           </div>
           
-          <div style="text-align: center; margin-bottom: 30px;">
-              <p style="font-size: 16px; color: #666;">Te mantendremos informado sobre:</p>
-              <p style="font-size: 14px; color: #888;">• Fecha de lanzamiento oficial<br>
-              • Acceso anticipado exclusivo<br>
-              • Contenido educativo premium<br>
-              • Ofertas especiales para miembros</p>
-          </div>
-          
-          <div style="background: #e8f4fd; padding: 20px; border-radius: 8px; border-left: 4px solid #667eea;">
-              <p style="margin: 0; font-size: 14px; color: #555;">
-                  <strong>💡 Consejo del día:</strong> Comienza ahorrando el 10% de tus ingresos. Pequeños cambios hoy, grandes resultados mañana.
-              </p>
-          </div>
-          
           <div style="text-align: center; margin-top: 40px; padding-top: 20px; border-top: 1px solid #eee;">
               <p style="font-size: 14px; color: #888;">
                   ¿Tienes preguntas? Responde a este email o contáctanos en <a href="mailto:soporte@finnvest.com" style="color: #667eea;">soporte@finnvest.com</a>
@@ -73,27 +82,33 @@ serve(async (req) => {
       </html>
     `
 
+    console.log('Sending email to Resend...')
+
     // Send email using Resend
     const resendResponse = await fetch('https://api.resend.com/emails', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${Deno.env.get('RESEND_API_KEY')}`,
+        'Authorization': `Bearer ${resendApiKey}`,
         'Content-Type': 'application/json',
       },
-              body: JSON.stringify({
-          from: 'FinnVest <onboarding@resend.dev>',
-          to: email,
-          subject: '¡Bienvenido a FinnVest! 🚀 Tu lugar está reservado',
-          html: emailContent,
-        }),
+      body: JSON.stringify({
+        from: 'FinnVest <onboarding@resend.dev>',
+        to: email,
+        subject: '¡Bienvenido a FinnVest! 🚀 Tu lugar está reservado',
+        html: emailContent,
+      }),
     })
+
+    console.log('Resend response status:', resendResponse.status)
 
     if (!resendResponse.ok) {
       const error = await resendResponse.text()
+      console.error('Resend error:', error)
       throw new Error(`Failed to send email: ${error}`)
     }
 
     const result = await resendResponse.json()
+    console.log('Email sent successfully:', result)
 
     return new Response(
       JSON.stringify({ 
@@ -108,7 +123,7 @@ serve(async (req) => {
     )
 
   } catch (error) {
-    console.error('Error:', error.message)
+    console.error('Edge Function error:', error.message)
     return new Response(
       JSON.stringify({ 
         success: false, 
