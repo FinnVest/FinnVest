@@ -393,26 +393,24 @@ if (contactForm) {
 async function joinWaitingList(event) {
     event.preventDefault();
     const emailInput = document.getElementById('waiting-email');
-    const successMsg = document.getElementById('waitingSuccess');
     const submitBtn = document.getElementById('waitingBtn');
     const originalText = submitBtn.textContent;
     
     const email = emailInput.value.trim();
     
     if (email === '') {
-        alert('Por favor ingresa tu correo electrónico.');
+        showErrorModal('Por favor ingresa tu correo electrónico.');
         return false;
     }
     
     // Validar formato de email
     if (!validateEmail(email)) {
-        alert('Por favor ingresa un correo electrónico válido.');
+        showErrorModal('Por favor ingresa un correo electrónico válido.');
         return false;
     }
     
-    // Mostrar estado de carga
-    submitBtn.textContent = 'Uniéndose...';
-    submitBtn.disabled = true;
+    // Mostrar modal de carga
+    showLoadingModal();
     
     try {
         // Verificar si el email ya existe
@@ -423,8 +421,8 @@ async function joinWaitingList(event) {
         }
         
         if (emailCheck.exists) {
-            successMsg.textContent = '¡Ya estás en la lista! Te notificaremos cuando lancemos la plataforma.';
-            successMsg.style.display = 'block';
+            hideLoadingModal();
+            showSuccessModal(email, '¡Ya estás en la lista! Te notificaremos cuando lancemos la plataforma.');
             emailInput.value = '';
         } else {
             // Agregar a la waitlist
@@ -433,27 +431,24 @@ async function joinWaitingList(event) {
             if (result.success) {
                 // Enviar email de bienvenida
                 const emailResult = await sendWelcomeEmail(email);
+                hideLoadingModal();
+                
                 if (emailResult.success) {
-                    successMsg.textContent = '¡Gracias por unirte! Te hemos enviado un email de bienvenida.';
+                    showSuccessModal(email, '¡Gracias por unirte! Te hemos enviado un email de bienvenida con toda la información.');
                 } else {
                     console.warn('Email de bienvenida no se pudo enviar:', emailResult.error);
-                    successMsg.textContent = '¡Gracias por unirte! Te notificaremos cuando lancemos la plataforma.';
+                    showSuccessModal(email, '¡Gracias por unirte! Te notificaremos cuando lancemos la plataforma.');
                 }
-                successMsg.style.display = 'block';
                 emailInput.value = '';
             } else {
                 throw new Error(result.error);
             }
         }
         
-        // Ocultar mensaje después de 5 segundos
-        setTimeout(() => {
-            successMsg.style.display = 'none';
-        }, 5000);
-        
     } catch (error) {
         console.error('Error:', error);
-        alert('Hubo un error al unirse a la lista. Por favor intenta de nuevo.');
+        hideLoadingModal();
+        showErrorModal('Hubo un error al unirse a la lista. Por favor intenta de nuevo.');
     } finally {
         // Restaurar botón
         submitBtn.textContent = originalText;
@@ -466,26 +461,24 @@ async function joinWaitingList(event) {
 async function joinFinalWaitlist(event) {
     event.preventDefault();
     const emailInput = document.getElementById('final-waiting-email');
-    const successMsg = document.getElementById('finalWaitingSuccess');
     const submitBtn = document.getElementById('finalWaitingBtn');
     const originalText = submitBtn.textContent;
     
     const email = emailInput.value.trim();
     
     if (email === '') {
-        alert('Por favor ingresa tu correo electrónico.');
+        showErrorModal('Por favor ingresa tu correo electrónico.');
         return false;
     }
     
     // Validar formato de email
     if (!validateEmail(email)) {
-        alert('Por favor ingresa un correo electrónico válido.');
+        showErrorModal('Por favor ingresa un correo electrónico válido.');
         return false;
     }
     
-    // Mostrar estado de carga
-    submitBtn.textContent = 'Uniéndose...';
-    submitBtn.disabled = true;
+    // Mostrar modal de carga
+    showLoadingModal();
     
     try {
         // Verificar si el email ya existe
@@ -496,8 +489,8 @@ async function joinFinalWaitlist(event) {
         }
         
         if (emailCheck.exists) {
-            successMsg.querySelector('p').textContent = '¡Ya estás en la lista! Te enviaremos un email de confirmación.';
-            successMsg.style.display = 'flex';
+            hideLoadingModal();
+            showSuccessModal(email, '¡Ya estás en la lista! Te enviaremos un email de confirmación.');
             emailInput.value = '';
         } else {
             // Agregar a la waitlist
@@ -506,27 +499,24 @@ async function joinFinalWaitlist(event) {
             if (result.success) {
                 // Enviar email de bienvenida
                 const emailResult = await sendWelcomeEmail(email);
+                hideLoadingModal();
+                
                 if (emailResult.success) {
-                    successMsg.querySelector('p').textContent = '¡Perfecto! Ya estás en la lista. Te hemos enviado un email de bienvenida.';
+                    showSuccessModal(email, '¡Gracias por unirte! Te hemos enviado un email de bienvenida con toda la información.');
                 } else {
                     console.warn('Email de bienvenida no se pudo enviar:', emailResult.error);
-                    successMsg.querySelector('p').textContent = '¡Perfecto! Ya estás en la lista. Te enviaremos un email de confirmación.';
+                    showSuccessModal(email, '¡Gracias por unirte! Te notificaremos cuando lancemos la plataforma.');
                 }
-                successMsg.style.display = 'flex';
                 emailInput.value = '';
             } else {
                 throw new Error(result.error);
             }
         }
         
-        // Ocultar mensaje después de 5 segundos
-        setTimeout(() => {
-            successMsg.style.display = 'none';
-        }, 5000);
-        
     } catch (error) {
         console.error('Error:', error);
-        alert('Hubo un error al unirse a la lista. Por favor intenta de nuevo.');
+        hideLoadingModal();
+        showErrorModal('Hubo un error al unirse a la lista. Por favor intenta de nuevo.');
     } finally {
         // Restaurar botón
         submitBtn.textContent = originalText;
@@ -697,4 +687,88 @@ backToTop.addEventListener('mouseenter', () => {
 backToTop.addEventListener('mouseleave', () => {
     backToTop.style.transform = 'translateY(0)';
     backToTop.style.boxShadow = '0 4px 12px rgba(37, 99, 235, 0.3)';
+});
+
+// Modal Functions
+function showSuccessModal(email, message) {
+    const modal = document.getElementById('successModal');
+    const modalEmail = document.getElementById('modalEmail');
+    const modalMessage = modal.querySelector('.modal-message');
+    
+    modalEmail.textContent = email;
+    modalMessage.textContent = message;
+    modal.classList.add('show');
+    
+    // Prevent body scroll
+    document.body.style.overflow = 'hidden';
+}
+
+function showErrorModal(message) {
+    const modal = document.getElementById('successModal');
+    const modalIcon = modal.querySelector('.modal-icon i');
+    const modalTitle = modal.querySelector('.modal-title');
+    const modalMessage = modal.querySelector('.modal-message');
+    const modalEmail = document.getElementById('modalEmail');
+    
+    // Change to error style
+    modalIcon.className = 'fas fa-exclamation-triangle';
+    modalIcon.parentElement.style.background = 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)';
+    modalTitle.textContent = '¡Ups! Algo salió mal';
+    modalMessage.textContent = message;
+    modalEmail.style.display = 'none';
+    
+    modal.classList.add('show');
+    document.body.style.overflow = 'hidden';
+}
+
+function showLoadingModal() {
+    const modal = document.getElementById('loadingModal');
+    modal.classList.add('show');
+    document.body.style.overflow = 'hidden';
+}
+
+function hideLoadingModal() {
+    const modal = document.getElementById('loadingModal');
+    modal.classList.remove('show');
+    document.body.style.overflow = 'auto';
+}
+
+function closeModal() {
+    const successModal = document.getElementById('successModal');
+    const loadingModal = document.getElementById('loadingModal');
+    
+    successModal.classList.remove('show');
+    loadingModal.classList.remove('show');
+    document.body.style.overflow = 'auto';
+    
+    // Reset success modal to default state
+    const modalIcon = successModal.querySelector('.modal-icon i');
+    const modalTitle = successModal.querySelector('.modal-title');
+    const modalMessage = successModal.querySelector('.modal-message');
+    const modalEmail = document.getElementById('modalEmail');
+    
+    modalIcon.className = 'fas fa-check';
+    modalIcon.parentElement.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+    modalTitle.textContent = '¡Bienvenido a FinnVest! 🚀';
+    modalMessage.textContent = '¡Gracias por unirte a nuestra comunidad! Te hemos enviado un email de bienvenida con toda la información que necesitas.';
+    modalEmail.style.display = 'block';
+}
+
+// Close modal when clicking outside
+document.addEventListener('DOMContentLoaded', () => {
+    const modals = document.querySelectorAll('.modal-overlay');
+    modals.forEach(modal => {
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                closeModal();
+            }
+        });
+    });
+    
+    // Close modal with Escape key
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            closeModal();
+        }
+    });
 }); 
