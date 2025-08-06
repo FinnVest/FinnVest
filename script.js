@@ -470,7 +470,7 @@ async function joinWaitingList(event) {
                 hideLoadingModal();
                 
                 if (emailResult.success) {
-                    showSuccessModal(email, '¡Gracias por unirte! Te hemos enviado un email de bienvenida con toda la información.');
+                    showSuccessModal(email, '¡Gracias por unirte! Te hemos enviado un email de bienvenida con toda la información. 📧 <strong>Consejo:</strong> Revisa tu carpeta de spam si no lo encuentras en tu bandeja principal.');
                 } else {
                     console.warn('Email de bienvenida no se pudo enviar:', emailResult.error);
                     showSuccessModal(email, '¡Gracias por unirte! Te notificaremos cuando lancemos la plataforma.');
@@ -538,7 +538,7 @@ async function joinFinalWaitlist(event) {
                 hideLoadingModal();
                 
                 if (emailResult.success) {
-                    showSuccessModal(email, '¡Gracias por unirte! Te hemos enviado un email de bienvenida con toda la información.');
+                    showSuccessModal(email, '¡Gracias por unirte! Te hemos enviado un email de bienvenida con toda la información. 📧 <strong>Consejo:</strong> Revisa tu carpeta de spam si no lo encuentras en tu bandeja principal.');
                 } else {
                     console.warn('Email de bienvenida no se pudo enviar:', emailResult.error);
                     showSuccessModal(email, '¡Gracias por unirte! Te notificaremos cuando lancemos la plataforma.');
@@ -786,7 +786,7 @@ function closeModal() {
     modalIcon.className = 'fas fa-check';
     modalIcon.parentElement.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
     modalTitle.textContent = '¡Bienvenido a FinnVest! 🚀';
-    modalMessage.textContent = '¡Gracias por unirte a nuestra comunidad! Te hemos enviado un email de bienvenida con toda la información que necesitas.';
+    modalMessage.textContent = '¡Gracias por unirte a nuestra comunidad! Te hemos enviado un email de bienvenida con toda la información que necesitas. 📧 <strong>Consejo:</strong> Revisa tu carpeta de spam si no lo encuentras en tu bandeja principal.';
     modalEmail.style.display = 'block';
 }
 
