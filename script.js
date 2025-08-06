@@ -732,7 +732,7 @@ function showSuccessModal(email, message) {
     const modalMessage = modal.querySelector('.modal-message');
     
     modalEmail.textContent = email;
-    modalMessage.textContent = message;
+    modalMessage.innerHTML = message;
     modal.classList.add('show');
     
     // Prevent body scroll
@@ -750,7 +750,7 @@ function showErrorModal(message) {
     modalIcon.className = 'fas fa-exclamation-triangle';
     modalIcon.parentElement.style.background = 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)';
     modalTitle.textContent = '¡Ups! Algo salió mal';
-    modalMessage.textContent = message;
+    modalMessage.innerHTML = message;
     modalEmail.style.display = 'none';
     
     modal.classList.add('show');
@@ -786,7 +786,7 @@ function closeModal() {
     modalIcon.className = 'fas fa-check';
     modalIcon.parentElement.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
     modalTitle.textContent = '¡Bienvenido a FinnVest! 🚀';
-    modalMessage.textContent = '¡Gracias por unirte a nuestra comunidad! Te hemos enviado un email de bienvenida con toda la información que necesitas. 📧 <strong>Consejo:</strong> Revisa tu carpeta de spam si no lo encuentras en tu bandeja principal.';
+    modalMessage.innerHTML = '¡Gracias por unirte a nuestra comunidad! Te hemos enviado un email de bienvenida con toda la información que necesitas. 📧 <strong>Consejo:</strong> Revisa tu carpeta de spam si no lo encuentras en tu bandeja principal.';
     modalEmail.style.display = 'block';
 }
 
@@ -803,7 +803,7 @@ function showAlreadyRegisteredModal(email) {
     modalIcon.className = 'fas fa-user-check';
     modalIcon.parentElement.style.background = 'linear-gradient(135deg, #10b981 0%, #059669 100%)';
     modalTitle.textContent = '¡Ya estás registrado! 🎉';
-    modalMessage.textContent = '¡Genial! Ya tienes tu lugar reservado. Lo mejor está por venir, mantente atento a tu correo. 📧 <strong>Consejo:</strong> Revisa tu carpeta de spam si no has recibido nuestros emails anteriores. Te notificaremos por email cuando lancemos la plataforma.';
+    modalMessage.innerHTML = '¡Genial! Ya tienes tu lugar reservado. Lo mejor está por venir, mantente atento a tu correo. 📧 <strong>Consejo:</strong> Revisa tu carpeta de spam si no has recibido nuestros emails anteriores. Te notificaremos por email cuando lancemos la plataforma.';
     modalEmail.textContent = email;
     modalEmail.style.display = 'block';
     
