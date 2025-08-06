@@ -71,9 +71,9 @@ serve(async (req) => {
           </div>
           
           <div style="text-align: center; margin-top: 40px; padding-top: 20px; border-top: 1px solid #eee;">
-              <p style="font-size: 14px; color: #888;">
-                  ¿Tienes preguntas? Responde a este email o contáctanos en <a href="mailto:soporte@finnvest.com" style="color: #667eea;">soporte@finnvest.com</a>
-              </p>
+                             <p style="font-size: 14px; color: #888;">
+                   ¿Tienes preguntas? Responde a este email o contáctanos en <a href="mailto:finnvestauth@gmail.com" style="color: #667eea;">finnvestauth@gmail.com</a>
+               </p>
               <p style="font-size: 12px; color: #999;">
                   © 2024 FinnVest. Todos los derechos reservados.
               </p>
@@ -93,12 +93,12 @@ serve(async (req) => {
         'Authorization': `Bearer ${resendApiKey}`,
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({
-        from: 'FinnVest <j.nievesh@uniandes.edu.co>',
-        to: email,
-        subject: '¡Bienvenido a FinnVest! 🚀 Tu lugar está reservado',
-        html: emailContent,
-      }),
+             body: JSON.stringify({
+         from: 'FinnVest <finnvestauth@gmail.com>',
+         to: email,
+         subject: '¡Bienvenido a FinnVest! 🚀 Tu lugar está reservado',
+         html: emailContent,
+       }),
     })
 
     console.log('Resend response status:', resendResponse.status)
