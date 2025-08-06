@@ -1,3 +1,31 @@
+// Email validation function (moved from supabase-config.js to ensure availability)
+function validateEmail(email) {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+}
+
+// Fallback functions in case supabase-config.js fails to load
+if (typeof addToWaitlist === 'undefined') {
+    window.addToWaitlist = async function(email) {
+        console.error('Supabase not loaded properly');
+        return { success: false, error: 'Supabase configuration not available' };
+    };
+}
+
+if (typeof checkEmailExists === 'undefined') {
+    window.checkEmailExists = async function(email) {
+        console.error('Supabase not loaded properly');
+        return { exists: false, error: 'Supabase configuration not available' };
+    };
+}
+
+if (typeof sendWelcomeEmail === 'undefined') {
+    window.sendWelcomeEmail = async function(email) {
+        console.error('Supabase not loaded properly');
+        return { success: false, error: 'Supabase configuration not available' };
+    };
+}
+
 // Mobile Navigation Toggle
 const hamburger = document.querySelector('.hamburger');
 const navMenu = document.querySelector('.nav-menu');
@@ -57,6 +85,11 @@ const observer = new IntersectionObserver((entries) => {
 document.addEventListener('DOMContentLoaded', () => {
     // Set default language to Spanish
     changeLanguage('es');
+    
+    // Ensure Supabase functions are available
+    if (typeof addToWaitlist === 'undefined') {
+        console.warn('Supabase functions not loaded, using fallbacks');
+    }
     
     const animateElements = document.querySelectorAll('.about-content, .contact-content, .section-header');
     animateElements.forEach(el => {
@@ -392,6 +425,8 @@ if (contactForm) {
 
 async function joinWaitingList(event) {
     event.preventDefault();
+    console.log('joinWaitingList called');
+    
     const emailInput = document.getElementById('waiting-email');
     const submitBtn = document.getElementById('waitingBtn');
     const originalText = submitBtn.textContent;
@@ -404,6 +439,7 @@ async function joinWaitingList(event) {
     }
     
     // Validar formato de email
+    console.log('validateEmail function available:', typeof validateEmail);
     if (!validateEmail(email)) {
         showErrorModal('Por favor ingresa un correo electrónico válido.');
         return false;

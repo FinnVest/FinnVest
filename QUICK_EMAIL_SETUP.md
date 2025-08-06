@@ -24,35 +24,6 @@
    RESEND_API_KEY = re_tu_api_key_aqui
    ```
 
-### Opción B: Configuración Local
-
-Si estás desarrollando localmente:
-
-1. **Instala Supabase CLI:**
-   ```bash
-   npm install -g supabase
-   ```
-
-2. **Inicia sesión:**
-   ```bash
-   supabase login
-   ```
-
-3. **Conecta tu proyecto:**
-   ```bash
-   supabase link --project-ref TU_PROJECT_ID
-   ```
-
-4. **Configura la variable:**
-   ```bash
-   supabase secrets set RESEND_API_KEY=re_tu_api_key_aqui
-   ```
-
-5. **Despliega la función:**
-   ```bash
-   supabase functions deploy send-welcome-email
-   ```
-
 ## 🎯 Paso 4: Probar (1 min)
 
 1. **Registra un email en tu sitio**

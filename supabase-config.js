@@ -105,11 +105,7 @@ async function getWaitlistStats() {
     }
 }
 
-// Función para validar email
-function validateEmail(email) {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
-}
+// Email validation function moved to script.js to ensure availability
 
 // Función para enviar email de bienvenida
 async function sendWelcomeEmail(email) {
