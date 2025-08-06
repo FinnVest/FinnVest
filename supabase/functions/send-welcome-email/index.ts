@@ -80,12 +80,12 @@ serve(async (req) => {
         'Authorization': `Bearer ${Deno.env.get('RESEND_API_KEY')}`,
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({
-        from: 'FinnVest <noreply@finnvest.com>',
-        to: email,
-        subject: '¡Bienvenido a FinnVest! 🚀 Tu lugar está reservado',
-        html: emailContent,
-      }),
+              body: JSON.stringify({
+          from: 'FinnVest <onboarding@resend.dev>',
+          to: email,
+          subject: '¡Bienvenido a FinnVest! 🚀 Tu lugar está reservado',
+          html: emailContent,
+        }),
     })
 
     if (!resendResponse.ok) {
