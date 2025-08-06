@@ -1,6 +1,3 @@
-# Supabase Configuration (contains sensitive credentials)
-supabase-config.js
-
 # IDE files
 .vscode/
 .idea/
