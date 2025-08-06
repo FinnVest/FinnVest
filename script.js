@@ -431,7 +431,14 @@ async function joinWaitingList(event) {
             const result = await addToWaitlist(email);
             
             if (result.success) {
-                successMsg.textContent = '¡Gracias por unirte! Te notificaremos cuando lancemos la plataforma.';
+                // Enviar email de bienvenida
+                const emailResult = await sendWelcomeEmail(email);
+                if (emailResult.success) {
+                    successMsg.textContent = '¡Gracias por unirte! Te hemos enviado un email de bienvenida.';
+                } else {
+                    console.warn('Email de bienvenida no se pudo enviar:', emailResult.error);
+                    successMsg.textContent = '¡Gracias por unirte! Te notificaremos cuando lancemos la plataforma.';
+                }
                 successMsg.style.display = 'block';
                 emailInput.value = '';
             } else {
@@ -497,7 +504,14 @@ async function joinFinalWaitlist(event) {
             const result = await addToWaitlist(email);
             
             if (result.success) {
-                successMsg.querySelector('p').textContent = '¡Perfecto! Ya estás en la lista. Te enviaremos un email de confirmación.';
+                // Enviar email de bienvenida
+                const emailResult = await sendWelcomeEmail(email);
+                if (emailResult.success) {
+                    successMsg.querySelector('p').textContent = '¡Perfecto! Ya estás en la lista. Te hemos enviado un email de bienvenida.';
+                } else {
+                    console.warn('Email de bienvenida no se pudo enviar:', emailResult.error);
+                    successMsg.querySelector('p').textContent = '¡Perfecto! Ya estás en la lista. Te enviaremos un email de confirmación.';
+                }
                 successMsg.style.display = 'flex';
                 emailInput.value = '';
             } else {
