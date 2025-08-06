@@ -448,8 +448,20 @@ async function joinWaitingList(event) {
     // Mostrar modal de carga
     showLoadingModal();
     
-            try {
-            // Agregar directamente a la waitlist (sin verificar duplicados por ahora)
+                try {
+        // Verificar si el email ya existe
+        const emailCheck = await checkEmailExists(email);
+        
+        if (emailCheck.error) {
+            throw new Error(emailCheck.error);
+        }
+        
+        if (emailCheck.exists) {
+            hideLoadingModal();
+            showAlreadyRegisteredModal(email);
+            emailInput.value = '';
+        } else {
+            // Agregar a la waitlist
             const result = await addToWaitlist(email);
             
             if (result.success) {
@@ -459,6 +471,7 @@ async function joinWaitingList(event) {
             } else {
                 throw new Error(result.error);
             }
+        }
         
     } catch (error) {
         console.error('Error:', error);
@@ -496,15 +509,28 @@ async function joinFinalWaitlist(event) {
     showLoadingModal();
     
     try {
-        // Agregar directamente a la waitlist (sin verificar duplicados por ahora)
-        const result = await addToWaitlist(email);
+        // Verificar si el email ya existe
+        const emailCheck = await checkEmailExists(email);
         
-        if (result.success) {
+        if (emailCheck.error) {
+            throw new Error(emailCheck.error);
+        }
+        
+        if (emailCheck.exists) {
             hideLoadingModal();
-            showSuccessModal(email, '¡Gracias por unirte! Te notificaremos cuando lancemos la plataforma.');
+            showAlreadyRegisteredModal(email);
             emailInput.value = '';
         } else {
-            throw new Error(result.error);
+            // Agregar a la waitlist
+            const result = await addToWaitlist(email);
+            
+            if (result.success) {
+                hideLoadingModal();
+                showSuccessModal(email, '¡Gracias por unirte! Te notificaremos cuando lancemos la plataforma.');
+                emailInput.value = '';
+            } else {
+                throw new Error(result.error);
+            }
         }
         
     } catch (error) {
@@ -746,6 +772,88 @@ function closeModal() {
     modalTitle.textContent = '¡Bienvenido a FinnVest! 🚀';
     modalMessage.textContent = '¡Gracias por unirte a nuestra comunidad! Te hemos enviado un email de bienvenida con toda la información que necesitas.';
     modalEmail.style.display = 'block';
+}
+
+// Función para mostrar modal de "ya registrado"
+function showAlreadyRegisteredModal(email) {
+    const modal = document.getElementById('successModal');
+    const modalIcon = modal.querySelector('.modal-icon i');
+    const modalTitle = modal.querySelector('.modal-title');
+    const modalMessage = modal.querySelector('.modal-message');
+    const modalEmail = document.getElementById('modalEmail');
+    const modalActions = modal.querySelector('.modal-actions');
+    
+    // Cambiar a estilo de "ya registrado"
+    modalIcon.className = 'fas fa-user-check';
+    modalIcon.parentElement.style.background = 'linear-gradient(135deg, #10b981 0%, #059669 100%)';
+    modalTitle.textContent = '¡Ya estás registrado! 🎉';
+    modalMessage.textContent = '¡Genial! Ya tienes tu lugar reservado. Lo mejor está por venir, mantente atento a tu correo.';
+    modalEmail.textContent = email;
+    modalEmail.style.display = 'block';
+    
+    // Cambiar botones
+    modalActions.innerHTML = `
+        <button class="modal-btn modal-btn-primary" onclick="closeModal()">
+            <i class="fas fa-check"></i>
+            ¡Perfecto!
+        </button>
+        <button class="modal-btn modal-btn-secondary" onclick="resendWelcomeEmail('${email}')">
+            <i class="fas fa-envelope"></i>
+            Reenviar email
+        </button>
+    `;
+    
+    modal.classList.add('show');
+    document.body.style.overflow = 'hidden';
+}
+
+// Función para reenviar email de bienvenida
+async function resendWelcomeEmail(email) {
+    const resendBtn = document.querySelector('.modal-btn-secondary');
+    const originalText = resendBtn.innerHTML;
+    
+    // Cambiar botón a estado de carga
+    resendBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enviando...';
+    resendBtn.disabled = true;
+    
+    try {
+        const result = await sendWelcomeEmail(email);
+        
+        if (result.success) {
+            // Mostrar mensaje de éxito
+            const modalMessage = document.querySelector('.modal-message');
+            modalMessage.textContent = '¡Email reenviado exitosamente! Revisa tu bandeja de entrada.';
+            
+            // Cambiar botón a éxito
+            resendBtn.innerHTML = '<i class="fas fa-check"></i> ¡Enviado!';
+            resendBtn.style.background = 'linear-gradient(135deg, #10b981 0%, #059669 100%)';
+            
+            // Restaurar después de 3 segundos
+            setTimeout(() => {
+                resendBtn.innerHTML = originalText;
+                resendBtn.disabled = false;
+                resendBtn.style.background = '';
+                modalMessage.textContent = '¡Genial! Ya tienes tu lugar reservado. Lo mejor está por venir, mantente atento a tu correo.';
+            }, 3000);
+        } else {
+            throw new Error(result.error);
+        }
+    } catch (error) {
+        console.error('Error reenviando email:', error);
+        
+        // Mostrar mensaje de error
+        const modalMessage = document.querySelector('.modal-message');
+        modalMessage.textContent = 'No se pudo reenviar el email. Por favor intenta más tarde.';
+        
+        // Restaurar botón
+        resendBtn.innerHTML = originalText;
+        resendBtn.disabled = false;
+        
+        // Restaurar mensaje después de 3 segundos
+        setTimeout(() => {
+            modalMessage.textContent = '¡Genial! Ya tienes tu lugar reservado. Lo mejor está por venir, mantente atento a tu correo.';
+        }, 3000);
+    }
 }
 
 // Close modal when clicking outside
