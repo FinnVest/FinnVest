@@ -390,45 +390,135 @@ if (contactForm) {
     });
 }
 
-function joinWaitingList(event) {
+async function joinWaitingList(event) {
     event.preventDefault();
     const emailInput = document.getElementById('waiting-email');
     const successMsg = document.getElementById('waitingSuccess');
-    if (emailInput.value.trim() !== '') {
-        successMsg.style.display = 'block';
-        emailInput.value = '';
+    const submitBtn = document.getElementById('waitingBtn');
+    const originalText = submitBtn.textContent;
+    
+    const email = emailInput.value.trim();
+    
+    if (email === '') {
+        alert('Por favor ingresa tu correo electrónico.');
+        return false;
+    }
+    
+    // Validar formato de email
+    if (!validateEmail(email)) {
+        alert('Por favor ingresa un correo electrónico válido.');
+        return false;
+    }
+    
+    // Mostrar estado de carga
+    submitBtn.textContent = 'Uniéndose...';
+    submitBtn.disabled = true;
+    
+    try {
+        // Verificar si el email ya existe
+        const emailCheck = await checkEmailExists(email);
+        
+        if (emailCheck.error) {
+            throw new Error(emailCheck.error);
+        }
+        
+        if (emailCheck.exists) {
+            successMsg.textContent = '¡Ya estás en la lista! Te notificaremos cuando lancemos la plataforma.';
+            successMsg.style.display = 'block';
+            emailInput.value = '';
+        } else {
+            // Agregar a la waitlist
+            const result = await addToWaitlist(email);
+            
+            if (result.success) {
+                successMsg.textContent = '¡Gracias por unirte! Te notificaremos cuando lancemos la plataforma.';
+                successMsg.style.display = 'block';
+                emailInput.value = '';
+            } else {
+                throw new Error(result.error);
+            }
+        }
+        
+        // Ocultar mensaje después de 5 segundos
         setTimeout(() => {
             successMsg.style.display = 'none';
         }, 5000);
+        
+    } catch (error) {
+        console.error('Error:', error);
+        alert('Hubo un error al unirse a la lista. Por favor intenta de nuevo.');
+    } finally {
+        // Restaurar botón
+        submitBtn.textContent = originalText;
+        submitBtn.disabled = false;
     }
+    
     return false;
 }
 
-function joinFinalWaitlist(event) {
+async function joinFinalWaitlist(event) {
     event.preventDefault();
     const emailInput = document.getElementById('final-waiting-email');
     const successMsg = document.getElementById('finalWaitingSuccess');
     const submitBtn = document.getElementById('finalWaitingBtn');
     const originalText = submitBtn.textContent;
     
-    if (emailInput.value.trim() !== '') {
-        // Show loading state
-        submitBtn.textContent = 'Uniéndose...';
-        submitBtn.disabled = true;
+    const email = emailInput.value.trim();
+    
+    if (email === '') {
+        alert('Por favor ingresa tu correo electrónico.');
+        return false;
+    }
+    
+    // Validar formato de email
+    if (!validateEmail(email)) {
+        alert('Por favor ingresa un correo electrónico válido.');
+        return false;
+    }
+    
+    // Mostrar estado de carga
+    submitBtn.textContent = 'Uniéndose...';
+    submitBtn.disabled = true;
+    
+    try {
+        // Verificar si el email ya existe
+        const emailCheck = await checkEmailExists(email);
         
-        // Simulate API call
-        setTimeout(() => {
+        if (emailCheck.error) {
+            throw new Error(emailCheck.error);
+        }
+        
+        if (emailCheck.exists) {
+            successMsg.querySelector('p').textContent = '¡Ya estás en la lista! Te enviaremos un email de confirmación.';
             successMsg.style.display = 'flex';
             emailInput.value = '';
-            submitBtn.textContent = originalText;
-            submitBtn.disabled = false;
+        } else {
+            // Agregar a la waitlist
+            const result = await addToWaitlist(email);
             
-            // Hide success message after 5 seconds
-            setTimeout(() => {
-                successMsg.style.display = 'none';
-            }, 5000);
-        }, 1500);
+            if (result.success) {
+                successMsg.querySelector('p').textContent = '¡Perfecto! Ya estás en la lista. Te enviaremos un email de confirmación.';
+                successMsg.style.display = 'flex';
+                emailInput.value = '';
+            } else {
+                throw new Error(result.error);
+            }
+        }
+        
+        // Ocultar mensaje después de 5 segundos
+        setTimeout(() => {
+            successMsg.style.display = 'none';
+        }, 5000);
+        
+    } catch (error) {
+        console.error('Error:', error);
+        alert('Hubo un error al unirse a la lista. Por favor intenta de nuevo.');
+    } finally {
+        // Restaurar botón
+        submitBtn.textContent = originalText;
+        submitBtn.disabled = false;
     }
+    
     return false;
 }
 

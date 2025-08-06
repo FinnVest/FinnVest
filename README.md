@@ -7,7 +7,8 @@ A modern, responsive landing page for FinnVest - a financial education platform 
 - **Bilingual Support**: English and Spanish language switching
 - **Responsive Design**: Optimized for desktop, tablet, and mobile
 - **Interactive Elements**: Scroll-reveal animations, hover effects, and smooth transitions
-- **Waitlist System**: Dual email capture forms for lead generation
+- **Waitlist System**: Real-time database integration with Supabase for lead generation
+- **Email Validation**: Duplicate email detection and format validation
 - **Modern UI**: Glass morphism effects, gradients, and 3D elements
 - **Accessibility**: Semantic HTML and keyboard navigation support
 
@@ -20,6 +21,7 @@ A modern, responsive landing page for FinnVest - a financial education platform 
 - **HTML5**: Semantic markup
 - **CSS3**: Modern styling with Flexbox, Grid, and animations
 - **JavaScript**: Vanilla JS for interactivity and language switching
+- **Supabase**: Backend database for waitlist management
 - **Font Awesome**: Icons
 - **Google Fonts**: Nunito font family
 
@@ -27,13 +29,16 @@ A modern, responsive landing page for FinnVest - a financial education platform 
 
 ```
 FinnVest-Website/
-├── index.html          # Main HTML file
-├── styles.css          # All CSS styles
-├── script.js           # JavaScript functionality
-├── logo.png            # Company logo
-├── finnvest.png        # Platform logo
-├── landing.png         # Hero section image
-└── README.md           # This file
+├── index.html              # Main HTML file
+├── styles.css              # All CSS styles
+├── script.js               # JavaScript functionality
+├── supabase-config.js      # Supabase configuration and functions
+├── supabase-config.example.js  # Example configuration file
+├── SUPABASE_SETUP.md       # Supabase setup instructions
+├── logo.png                # Company logo
+├── finnvest.png            # Platform logo
+├── landing.png             # Hero section image
+└── README.md               # This file
 ```
 
 ## 👥 Collaboration Guide
@@ -52,13 +57,22 @@ FinnVest-Website/
    cd Finnvest-Website
    ```
 
-2. **Open in your preferred editor:**
+2. **Configure Supabase** (required for waitlist functionality):
+   ```bash
+   # Copy the example configuration
+   cp supabase-config.example.js supabase-config.js
+   
+   # Edit supabase-config.js with your Supabase credentials
+   # See SUPABASE_SETUP.md for detailed instructions
+   ```
+
+3. **Open in your preferred editor:**
    ```bash
    code .  # For VS Code
    # or open with Cursor, Sublime Text, etc.
    ```
 
-3. **Start a local server** (optional but recommended):
+4. **Start a local server** (optional but recommended):
    ```bash
    # Using Python
    python -m http.server 8000
@@ -215,17 +229,35 @@ git branch -a
 
 ## 🌐 Deployment
 
-### GitHub Pages (Free)
-1. Go to your repository on GitHub
-2. Settings → Pages
-3. Select source branch (usually `main`)
-4. Your site will be available at: `https://mariaecheverrie.github.io/Finnvest-Website`
+### 🚀 Despliegue Rápido (Recomendado)
 
-### Other Hosting Options
-- **Netlify**: Drag and drop your folder
-- **Vercel**: Connect your GitHub repository
-- **Firebase Hosting**: Use Firebase CLI
-- **Traditional hosting**: Upload files via FTP
+**Para Windows:**
+1. Lee `DEPLOYMENT_WINDOWS.md` para instrucciones específicas
+2. Ejecuta `./deploy.sh` (si tienes Git Bash) o sigue las instrucciones manuales
+
+**Opciones de Despliegue Gratuito:**
+
+#### 1. Netlify (Más Fácil)
+- ✅ Despliegue automático desde GitHub
+- ✅ HTTPS automático
+- ✅ Dominio personalizado gratuito
+- 📖 Ver `DEPLOYMENT_GUIDE.md` para instrucciones detalladas
+
+#### 2. GitHub Pages (Directo)
+- ✅ Totalmente gratuito
+- ✅ Integrado con GitHub
+- Tu sitio en: `https://mariaecheverrie.github.io/Finnvest-Website`
+
+#### 3. Vercel (Muy Rápido)
+- ✅ Despliegue automático
+- ✅ Excelente rendimiento
+- ✅ HTTPS automático
+
+### 📁 Archivos de Configuración Incluidos
+- `netlify.toml` - Configuración para Netlify
+- `deploy.sh` - Script de despliegue automático
+- `DEPLOYMENT_GUIDE.md` - Guía completa
+- `DEPLOYMENT_WINDOWS.md` - Guía específica para Windows
 
 ## 📞 Support
 
