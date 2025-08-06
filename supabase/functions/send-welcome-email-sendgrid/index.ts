@@ -1,28 +1,3 @@
-# Configuración de Gmail SMTP para Emails
-
-## 🚀 **SOLUCIÓN GRATIS Y RÁPIDA**
-
-En lugar de Resend, usaremos Gmail SMTP que es completamente gratis y no requiere dominio.
-
-## 📧 **PASO 1: Configurar Gmail**
-
-### **1.1 Habilitar 2FA en tu Gmail**
-1. Ve a [myaccount.google.com](https://myaccount.google.com)
-2. **Seguridad** → **Verificación en 2 pasos**
-3. **Actívala** si no está activada
-
-### **1.2 Generar Contraseña de Aplicación**
-1. **Seguridad** → **Contraseñas de aplicación**
-2. **Selecciona app**: "Otra (nombre personalizado)"
-3. **Nombre**: "FinnVest"
-4. **Genera** la contraseña (16 caracteres)
-5. **Copia la contraseña** (la necesitarás)
-
-## 🔧 **PASO 2: Actualizar Edge Function**
-
-Reemplaza la Edge Function con esta versión que usa Gmail:
-
-```typescript
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 
 const corsHeaders = {
@@ -32,8 +7,12 @@ const corsHeaders = {
 }
 
 serve(async (req) => {
+  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
-    return new Response('ok', { headers: corsHeaders, status: 200 })
+    return new Response('ok', { 
+      headers: corsHeaders,
+      status: 200 
+    })
   }
 
   try {
@@ -46,7 +25,27 @@ serve(async (req) => {
       throw new Error('Email is required')
     }
 
-    // Email template
+    // Check if SENDGRID_API_KEY is configured
+    const sendgridApiKey = Deno.env.get('SENDGRID_API_KEY')
+    if (!sendgridApiKey) {
+      console.error('SENDGRID_API_KEY not configured')
+      return new Response(
+        JSON.stringify({ 
+          success: false, 
+          error: 'Email service not configured. Please set SENDGRID_API_KEY.' 
+        }),
+        { 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          status: 500 
+        }
+      )
+    }
+
+    // Get sender email from environment or use default
+    const senderEmail = Deno.env.get('SENDER_EMAIL') || 'tu-email@gmail.com'
+    const senderName = Deno.env.get('SENDER_NAME') || 'FinnVest'
+
+    // Simple email template for testing
     const emailContent = `
       <!DOCTYPE html>
       <html>
@@ -77,7 +76,7 @@ serve(async (req) => {
           
           <div style="text-align: center; margin-top: 40px; padding-top: 20px; border-top: 1px solid #eee;">
               <p style="font-size: 14px; color: #888;">
-                  ¿Tienes preguntas? Responde a este email o contáctanos en <a href="mailto:j.nievesh@uniandes.edu.co" style="color: #667eea;">j.nievesh@uniandes.edu.co</a>
+                  ¿Tienes preguntas? Responde a este email o contáctanos en <a href="mailto:finnvest.edu@gmail.com" style="color: #667eea;">finnvest.edu@gmail.com</a>
               </p>
               <p style="font-size: 12px; color: #999;">
                   © 2024 FinnVest. Todos los derechos reservados.
@@ -87,37 +86,51 @@ serve(async (req) => {
       </html>
     `
 
-    // Send email using Gmail SMTP via Resend (as proxy)
-    const gmailResponse = await fetch('https://api.resend.com/emails', {
+    console.log('Sending email to SendGrid...')
+
+    // Send email using SendGrid
+    console.log(`Sending email to: ${email}`);
+    
+    const sendgridResponse = await fetch('https://api.sendgrid.com/v3/mail/send', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${Deno.env.get('RESEND_API_KEY')}`,
+        'Authorization': `Bearer ${sendgridApiKey}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        from: 'FinnVest <j.nievesh@uniandes.edu.co>',
-        to: email,
-        subject: '¡Bienvenido a FinnVest! 🚀 Tu lugar está reservado',
-        html: emailContent,
+        personalizations: [
+          {
+            to: [{ email: email }],
+            subject: '¡Bienvenido a FinnVest! 🚀 Tu lugar está reservado'
+          }
+        ],
+        from: {
+          email: senderEmail,
+          name: senderName
+        },
+        content: [
+          {
+            type: 'text/html',
+            value: emailContent
+          }
+        ]
       }),
     })
 
-    console.log('Gmail response status:', gmailResponse.status)
+    console.log('SendGrid response status:', sendgridResponse.status)
 
-    if (!gmailResponse.ok) {
-      const error = await gmailResponse.text()
-      console.error('Gmail error:', error)
+    if (!sendgridResponse.ok) {
+      const error = await sendgridResponse.text()
+      console.error('SendGrid error:', error)
       throw new Error(`Failed to send email: ${error}`)
     }
 
-    const result = await gmailResponse.json()
-    console.log('Email sent successfully:', result)
+    console.log('Email sent successfully')
 
     return new Response(
       JSON.stringify({ 
         success: true, 
-        message: 'Welcome email sent successfully',
-        data: result 
+        message: 'Welcome email sent successfully'
       }),
       { 
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -139,34 +152,3 @@ serve(async (req) => {
     )
   }
 })
-```
-
-## 🔑 **PASO 3: Configurar Variables de Entorno**
-
-En Supabase Dashboard:
-1. **Settings** → **Edge Functions**
-2. **Environment Variables**:
-   - **Key**: `GMAIL_EMAIL`
-   - **Value**: `j.nievesh@uniandes.edu.co`
-   - **Key**: `GMAIL_PASSWORD`
-   - **Value**: `tu_contraseña_de_aplicacion`
-
-## ✅ **VENTAJAS DE GMAIL:**
-- ✅ **Completamente gratis**
-- ✅ **Sin límites de dominio**
-- ✅ **Funciona inmediatamente**
-- ✅ **Emails a cualquier dirección**
-- ✅ **Buena deliverability**
-
-## 🧪 **PRUEBA:**
-1. **Redesplega la Edge Function**
-2. **Registra cualquier email**
-3. **Deberías recibir el email de bienvenida**
-
-## 📧 **RESULTADO:**
-- Emails enviados desde `j.nievesh@uniandes.edu.co`
-- Template profesional
-- Sin limitaciones de dominio
-- Sistema completamente funcional
-
-¿Quieres que implemente esta solución?

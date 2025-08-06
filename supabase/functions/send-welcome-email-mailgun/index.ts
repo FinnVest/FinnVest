@@ -25,14 +25,16 @@ serve(async (req) => {
       throw new Error('Email is required')
     }
 
-    // Check if RESEND_API_KEY is configured
-    const resendApiKey = Deno.env.get('RESEND_API_KEY')
-    if (!resendApiKey) {
-      console.error('RESEND_API_KEY not configured')
+    // Check if MAILGUN_API_KEY and MAILGUN_DOMAIN are configured
+    const mailgunApiKey = Deno.env.get('MAILGUN_API_KEY')
+    const mailgunDomain = Deno.env.get('MAILGUN_DOMAIN')
+    
+    if (!mailgunApiKey || !mailgunDomain) {
+      console.error('MAILGUN_API_KEY or MAILGUN_DOMAIN not configured')
       return new Response(
         JSON.stringify({ 
           success: false, 
-          error: 'Email service not configured. Please set RESEND_API_KEY.' 
+          error: 'Email service not configured. Please set MAILGUN_API_KEY and MAILGUN_DOMAIN.' 
         }),
         { 
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -71,9 +73,9 @@ serve(async (req) => {
           </div>
           
           <div style="text-align: center; margin-top: 40px; padding-top: 20px; border-top: 1px solid #eee;">
-                             <p style="font-size: 14px; color: #888;">
-                   ¿Tienes preguntas? Responde a este email o contáctanos en <a href="mailto:onboarding@resend.dev" style="color: #667eea;">onboarding@resend.dev</a>
-               </p>
+              <p style="font-size: 14px; color: #888;">
+                  ¿Tienes preguntas? Responde a este email o contáctanos en <a href="mailto:tu-email@gmail.com" style="color: #667eea;">tu-email@gmail.com</a>
+              </p>
               <p style="font-size: 12px; color: #999;">
                   © 2024 FinnVest. Todos los derechos reservados.
               </p>
@@ -82,34 +84,34 @@ serve(async (req) => {
       </html>
     `
 
-    console.log('Sending email to Resend...')
+    console.log('Sending email to Mailgun...')
 
-    // Send email using Resend with your Gmail as sender
+    // Send email using Mailgun
     console.log(`Sending email to: ${email}`);
     
-    const resendResponse = await fetch('https://api.resend.com/emails', {
+    const formData = new FormData()
+    formData.append('from', `FinnVest <noreply@${mailgunDomain}>`)
+    formData.append('to', email)
+    formData.append('subject', '¡Bienvenido a FinnVest! 🚀 Tu lugar está reservado')
+    formData.append('html', emailContent)
+    
+    const mailgunResponse = await fetch(`https://api.mailgun.net/v3/${mailgunDomain}/messages`, {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${resendApiKey}`,
-        'Content-Type': 'application/json',
+        'Authorization': `Basic ${btoa(`api:${mailgunApiKey}`)}`,
       },
-             body: JSON.stringify({
-         from: 'FinnVest <onboarding@resend.dev>',
-         to: email,
-         subject: '¡Bienvenido a FinnVest! 🚀 Tu lugar está reservado',
-         html: emailContent,
-       }),
+      body: formData
     })
 
-    console.log('Resend response status:', resendResponse.status)
+    console.log('Mailgun response status:', mailgunResponse.status)
 
-    if (!resendResponse.ok) {
-      const error = await resendResponse.text()
-      console.error('Resend error:', error)
+    if (!mailgunResponse.ok) {
+      const error = await mailgunResponse.text()
+      console.error('Mailgun error:', error)
       throw new Error(`Failed to send email: ${error}`)
     }
 
-    const result = await resendResponse.json()
+    const result = await mailgunResponse.json()
     console.log('Email sent successfully:', result)
 
     return new Response(
@@ -137,4 +139,4 @@ serve(async (req) => {
       }
     )
   }
-}) 
+})

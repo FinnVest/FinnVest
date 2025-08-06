@@ -114,8 +114,8 @@ async function sendWelcomeEmail(email) {
     }
     
     try {
-        // Usar la Edge Function si está configurada, sino usar Resend directamente
-        const { data, error } = await supabase.functions.invoke('send-welcome-email', {
+        // Usar la Edge Function de SendGrid
+        const { data, error } = await supabase.functions.invoke('send-welcome-email-sendgrid', {
             body: { email: email }
         });
 
