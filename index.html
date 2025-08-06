@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FinnVest - Your Financial Future Starts Here</title>
+    <meta name="description" content="FinnVest - Professional financial services and investment solutions for your future.">
+    <link rel="stylesheet" href="styles.css?v=5.3">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Nunito:wght@800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <a href="index.html" class="logo-link">
+                    <img src="logo.png" alt="FinnVest Logo" class="cow-logo">
+                    <img src="finnvest.png" alt="FinnVest Platform" class="finnvest-logo">
+                </a>
+            </div>
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="#home" class="nav-link">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#services" class="nav-link">Services</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#about" class="nav-link">About</a>
+                </li>
+                        <li class="nav-item">
+            <a href="#waitlist" class="nav-link join-waitlist-btn">Join Waitlist</a>
+        </li>
+                <li class="nav-item">
+                    <div class="language-switcher">
+                        <button class="language-btn" onclick="toggleLanguageDropdown()">
+                            <i class="fas fa-globe"></i>
+                            <span class="current-lang">ES</span>
+                            <i class="fas fa-chevron-down arrow-icon"></i>
+                        </button>
+                        <div class="language-dropdown" id="languageDropdown">
+                            <a href="#" onclick="changeLanguage('en')" class="lang-option">
+                                <span class="flag">🇺🇸</span> English
+                            </a>
+                            <a href="#" onclick="changeLanguage('es')" class="lang-option">
+                                <span class="flag">🇪🇸</span> Español
+                            </a>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+            <div class="hamburger">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero">
+        <div class="hero-container">
+            <div class="hero-content">
+                        <h1 class="hero-title">La app que te enseña todo lo que deberías saber sobre tus finanzas</h1>
+        <p class="hero-subtitle">No necesitas más de 5 minutos al día para cambiar tu futuro. ¿Qué esperas?</p>
+                <div class="hero-buttons">
+                    <!-- Waiting List Form -->
+                    <form class="waiting-list-form" onsubmit="return joinWaitingList(event)">
+                                    <label for="waiting-email" class="waiting-label" id="waitingLabel">¡Únete a la lista de espera para el lanzamiento!</label>
+            <div class="waiting-input-group">
+                <input type="email" id="waiting-email" name="waiting-email" class="waiting-input" placeholder="Tu dirección de correo" required>
+                <button type="submit" class="btn btn-primary waiting-btn" id="waitingBtn">Unirse</button>
+            </div>
+            <div class="waiting-success" id="waitingSuccess" style="display:none;">¡Gracias por unirte! Te notificaremos cuando lancemos la plataforma.</div>
+                    </form>
+                </div>
+            </div>
+            <div class="hero-image">
+                <div class="hero-graphic">
+                    <img src="landing.png" alt="Landing Page Graphic" class="landing-image">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services Section -->
+    <section id="services" class="services">
+        <div class="container">
+            <div class="section-header">
+                <h2>Our Services</h2>
+                <p>Comprehensive financial solutions tailored to your needs</p>
+            </div>
+            <div class="services-stack">
+                <div class="service-rectangle" data-service="1">
+                    <div class="service-content">
+                        <div class="service-text">
+                            <h3>Invierte sin riesgo</h3>
+                            <p>Simula inversiones en acciones reales con precios del mercado actual — sin usar dinero real. Aprende haciendo.</p>
+                        </div>
+                        <div class="service-visual">
+                            <div class="visual-placeholder">
+                                <i class="fas fa-chart-line"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="service-rectangle" data-service="2">
+                    <div class="service-content">
+                        <div class="service-text">
+                            <h3>Lecciones de 5 minutos</h3>
+                            <p>Quizzes breves e interactivos para que aprendas conceptos financieros en cualquier momento, estés donde estés.</p>
+                        </div>
+                        <div class="service-visual">
+                            <div class="visual-placeholder">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="service-rectangle" data-service="3">
+                    <div class="service-content">
+                        <div class="service-text">
+                            <h3>Ahorra con estrategia</h3>
+                            <p>Descubre formas prácticas y efectivas para organizar tus gastos y empezar a ahorrar sin que duela.</p>
+                        </div>
+                        <div class="service-visual">
+                            <div class="visual-placeholder">
+                                <i class="fas fa-piggy-bank"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="service-rectangle" data-service="4">
+                    <div class="service-content">
+                        <div class="service-text">
+                            <h3>Explora tipos de inversión</h3>
+                            <p>Desde acciones hasta bonos o cripto, conoce las opciones disponibles y cuál puede ser la mejor para ti.</p>
+                        </div>
+                        <div class="service-visual">
+                            <div class="visual-placeholder">
+                                <i class="fas fa-coins"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="service-rectangle" data-service="5">
+                    <div class="service-content">
+                        <div class="service-text">
+                            <h3>Entiende tus impuestos (DIAN)</h3>
+                            <p>Aprende cómo funcionan los impuestos en Colombia, especialmente al invertir o ahorrar.</p>
+                        </div>
+                        <div class="service-visual">
+                            <div class="visual-placeholder">
+                                <i class="fas fa-file-invoice-dollar"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="service-rectangle" data-service="6">
+                    <div class="service-content">
+                        <div class="service-text">
+                            <h3>Tu progreso, gamificado</h3>
+                            <p>Gana monedas, sube de nivel y mantén tus rachas activas mientras aprendes a manejar tu dinero.</p>
+                        </div>
+                        <div class="service-visual">
+                            <div class="visual-placeholder">
+                                <i class="fas fa-trophy"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="about">
+        <div class="container">
+            <div class="about-content">
+                <div class="about-text">
+                    <h2>About FinnVest</h2>
+                    <p>With years of experience in the financial industry, FinnVest is your trusted partner for all your investment and financial planning needs. We believe in building long-term relationships with our clients, providing personalized solutions that align with your unique financial goals.</p>
+                    <div class="stats">
+                        <div class="stat">
+                            <h3>500+</h3>
+                            <p>Happy Clients</p>
+                        </div>
+                        <div class="stat">
+                            <h3>10+</h3>
+                            <p>Years Experience</p>
+                        </div>
+                        <div class="stat">
+                            <h3>$50M+</h3>
+                            <p>Assets Managed</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="about-image">
+                    <div class="about-graphic">
+                        <i class="fas fa-users"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Waitlist Section -->
+    <section id="waitlist" class="waitlist-section">
+        <div class="container">
+            <div class="waitlist-content">
+                <div class="section-header">
+                    <h2>¿No quieres perderte el lanzamiento?</h2>
+                    <p>Únete a miles de personas que ya están en la lista de espera. Sé de los primeros en acceder cuando lancemos la plataforma.</p>
+                </div>
+                <div class="waitlist-form-container">
+                    <div class="waitlist-benefits">
+                        <div class="benefit-item">
+                            <i class="fas fa-rocket"></i>
+                            <h4>Acceso Anticipado</h4>
+                            <p>Sé de los primeros en probar todas las funciones</p>
+                        </div>
+                        <div class="benefit-item">
+                            <i class="fas fa-gift"></i>
+                            <h4>Beneficios Exclusivos</h4>
+                            <p>Obtén descuentos especiales y contenido premium</p>
+                        </div>
+                        <div class="benefit-item">
+                            <i class="fas fa-bell"></i>
+                            <h4>Notificaciones Prioritarias</h4>
+                            <p>Recibe actualizaciones antes que nadie</p>
+                        </div>
+                    </div>
+                    <div class="waitlist-form-wrapper">
+                        <form class="waitlist-form-final" onsubmit="return joinFinalWaitlist(event)">
+                            <h3>¡Únete ahora y no te pierdas nada!</h3>
+                            <p class="waitlist-subtitle">Solo toma 30 segundos. Tu futuro financiero te lo agradecerá.</p>
+                            <div class="waitlist-input-group">
+                                <input type="email" id="final-waiting-email" name="final-waiting-email" class="waitlist-input-final" placeholder="Tu correo electrónico" required>
+                                <button type="submit" class="btn btn-primary waitlist-btn-final" id="finalWaitingBtn">¡Unirme Ahora!</button>
+                            </div>
+                            <div class="waitlist-success-final" id="finalWaitingSuccess" style="display:none;">
+                                <i class="fas fa-check-circle"></i>
+                                <p>¡Perfecto! Ya estás en la lista. Te enviaremos un email de confirmación.</p>
+                            </div>
+                            <p class="waitlist-disclaimer">* No spam, solo contenido valioso. Puedes darte de baja en cualquier momento.</p>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>FinnVest</h3>
+                    <p>Your trusted partner for financial success and investment planning.</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="#home">Home</a></li>
+                        <li><a href="#services">Services</a></li>
+                        <li><a href="#about">About</a></li>
+                        <li><a href="#waitlist">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Services</h4>
+                    <ul>
+                        <li>Investment Planning</li>
+                        <li>Risk Management</li>
+                        <li>Financial Planning</li>
+                        <li>Retirement Planning</li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Connect</h4>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-linkedin"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-facebook"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 FinnVest. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html> 
