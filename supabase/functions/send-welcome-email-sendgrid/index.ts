@@ -1,9 +1,21 @@
+/// <reference types="https://deno.land/x/types/index.d.ts" />
+
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
   'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+}
+
+interface EmailRequest {
+  email: string;
+}
+
+interface SendGridResponse {
+  success: boolean;
+  message?: string;
+  error?: string;
 }
 
 serve(async (req) => {
@@ -18,19 +30,75 @@ serve(async (req) => {
   try {
     console.log('Edge Function called')
     
-    const { email } = await req.json()
+    // Validate request method
+    if (req.method !== 'POST') {
+      return new Response(
+        JSON.stringify({ 
+          success: false, 
+          error: 'Method not allowed. Use POST.' 
+        }),
+        { 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          status: 405 
+        }
+      )
+    }
+
+    // Parse and validate request body
+    let requestBody: EmailRequest;
+    try {
+      requestBody = await req.json();
+    } catch (parseError) {
+      return new Response(
+        JSON.stringify({ 
+          success: false, 
+          error: 'Invalid JSON in request body' 
+        }),
+        { 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          status: 400 
+        }
+      )
+    }
+
+    const { email } = requestBody;
     console.log('Email received:', email)
 
-    if (!email) {
-      throw new Error('Email is required')
+    // Validate email
+    if (!email || typeof email !== 'string') {
+      return new Response(
+        JSON.stringify({ 
+          success: false, 
+          error: 'Valid email is required' 
+        }),
+        { 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          status: 400 
+        }
+      )
+    }
+
+    // Basic email format validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return new Response(
+        JSON.stringify({ 
+          success: false, 
+          error: 'Invalid email format' 
+        }),
+        { 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          status: 400 
+        }
+      )
     }
 
     // Check if SENDGRID_API_KEY is configured
-    const sendgridApiKey = Deno.env.get('SENDGRID_API_KEY')
+    const sendgridApiKey = Deno.env.get('SENDGRID_API_KEY');
     if (!sendgridApiKey) {
       console.error('SENDGRID_API_KEY not configured')
       return new Response(
-        JSON.stringify({ 
+        JSON.stringify({
           success: false, 
           error: 'Email service not configured. Please set SENDGRID_API_KEY.' 
         }),
@@ -42,8 +110,23 @@ serve(async (req) => {
     }
 
     // Get sender email from environment or use default
-    const senderEmail = Deno.env.get('SENDER_EMAIL') || 'tu-email@gmail.com'
-    const senderName = Deno.env.get('SENDER_NAME') || 'FinnVest'
+    const senderEmail = Deno.env.get('SENDER_EMAIL') || 'noreply@finnvest.com';
+    const senderName = Deno.env.get('SENDER_NAME') || 'FinnVest';
+
+    // Validate sender email
+    if (!emailRegex.test(senderEmail)) {
+      console.error('Invalid sender email format:', senderEmail);
+      return new Response(
+        JSON.stringify({ 
+          success: false, 
+          error: 'Invalid sender email configuration' 
+        }),
+        { 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          status: 500 
+        }
+      )
+    }
 
     // Simple email template for testing
     const emailContent = `
@@ -120,9 +203,26 @@ serve(async (req) => {
     console.log('SendGrid response status:', sendgridResponse.status)
 
     if (!sendgridResponse.ok) {
-      const error = await sendgridResponse.text()
-      console.error('SendGrid error:', error)
-      throw new Error(`Failed to send email: ${error}`)
+      let errorMessage = 'Failed to send email';
+      try {
+        const errorText = await sendgridResponse.text();
+        console.error('SendGrid error response:', errorText);
+        errorMessage = `SendGrid error: ${errorText}`;
+      } catch (error) {
+        console.error('Failed to read error response:', error);
+        errorMessage = `SendGrid error: HTTP ${sendgridResponse.status}`;
+      }
+      
+      return new Response(
+        JSON.stringify({ 
+          success: false, 
+          error: errorMessage 
+        }),
+        { 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          status: 500 
+        }
+      )
     }
 
     console.log('Email sent successfully')
@@ -139,15 +239,15 @@ serve(async (req) => {
     )
 
   } catch (error) {
-    console.error('Edge Function error:', error.message)
+    console.error('Edge Function error:', error instanceof Error ? error.message : 'Unknown error');
     return new Response(
       JSON.stringify({ 
         success: false, 
-        error: error.message 
+        error: error instanceof Error ? error.message : 'Internal server error'
       }),
       { 
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        status: 400 
+        status: 500 
       }
     )
   }
