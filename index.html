@@ -5,9 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FinnVest - Your Financial Future Starts Here</title>
     <meta name="description" content="FinnVest - Professional financial services and investment solutions for your future.">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐄</text></svg>">
     <link rel="stylesheet" href="styles.css?v=5.3">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Nunito:wght@800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Supabase CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <!-- Environment Variables for Supabase -->
+    <script>
+        // Environment variables for Supabase (configured in Netlify dashboard)
+        window.SUPABASE_URL = 'https://sbcruleuzquwtvnjruwu.supabase.co';
+        window.SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNiY3J1bGV1enF1d3R2bmpydXd1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTIyNTg4ODYsImV4cCI6MjA2NzgzNDg4Nn0.ZZY95GOUFBQKavqNFEOOeoDPpP2EhAgDQ43ukxyDOp8';
+    </script>
 </head>
 <body>
     <!-- Navigation -->
@@ -301,6 +311,37 @@
         </div>
     </footer>
 
+    <!-- Modal Popup -->
+    <div class="modal-overlay" id="successModal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal()">&times;</button>
+            <div class="modal-icon">
+                <i class="fas fa-check"></i>
+            </div>
+            <h2 class="modal-title">¡Bienvenido a FinnVest! 🚀</h2>
+            <p class="modal-message">¡Gracias por unirte a nuestra comunidad! Te hemos enviado un email de bienvenida con toda la información que necesitas. 📧 <strong>Consejo:</strong> Revisa tu carpeta de spam si no lo encuentras en tu bandeja principal.</p>
+            <div class="modal-email" id="modalEmail"></div>
+            <div class="modal-actions">
+                <button class="modal-btn modal-btn-primary" onclick="closeModal()">
+                    <i class="fas fa-check"></i>
+                    ¡Perfecto!
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Modal -->
+    <div class="modal-overlay" id="loadingModal">
+        <div class="modal-content">
+            <div class="modal-loading">
+                <div class="spinner"></div>
+                <span>Procesando tu registro...</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="supabase-config.js"></script>
     <script src="script.js"></script>
 </body>
 </html> 

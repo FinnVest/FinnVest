@@ -1,3 +1,31 @@
+// Email validation function (moved from supabase-config.js to ensure availability)
+function validateEmail(email) {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+}
+
+// Fallback functions in case supabase-config.js fails to load
+if (typeof addToWaitlist === 'undefined') {
+    window.addToWaitlist = async function(email) {
+        console.error('Supabase not loaded properly');
+        return { success: false, error: 'Supabase configuration not available' };
+    };
+}
+
+if (typeof checkEmailExists === 'undefined') {
+    window.checkEmailExists = async function(email) {
+        console.error('Supabase not loaded properly');
+        return { exists: false, error: 'Supabase configuration not available' };
+    };
+}
+
+if (typeof sendWelcomeEmail === 'undefined') {
+    window.sendWelcomeEmail = async function(email) {
+        console.error('Supabase not loaded properly');
+        return { success: false, error: 'Supabase configuration not available' };
+    };
+}
+
 // Mobile Navigation Toggle
 const hamburger = document.querySelector('.hamburger');
 const navMenu = document.querySelector('.nav-menu');
@@ -57,6 +85,11 @@ const observer = new IntersectionObserver((entries) => {
 document.addEventListener('DOMContentLoaded', () => {
     // Set default language to Spanish
     changeLanguage('es');
+    
+    // Ensure Supabase functions are available
+    if (typeof addToWaitlist === 'undefined') {
+        console.warn('Supabase functions not loaded, using fallbacks');
+    }
     
     const animateElements = document.querySelectorAll('.about-content, .contact-content, .section-header');
     animateElements.forEach(el => {
@@ -390,45 +423,142 @@ if (contactForm) {
     });
 }
 
-function joinWaitingList(event) {
+async function joinWaitingList(event) {
     event.preventDefault();
+    console.log('joinWaitingList called');
+    
     const emailInput = document.getElementById('waiting-email');
-    const successMsg = document.getElementById('waitingSuccess');
-    if (emailInput.value.trim() !== '') {
-        successMsg.style.display = 'block';
-        emailInput.value = '';
-        setTimeout(() => {
-            successMsg.style.display = 'none';
-        }, 5000);
+    const submitBtn = document.getElementById('waitingBtn');
+    const originalText = submitBtn.textContent;
+    
+    const email = emailInput.value.trim();
+    
+    if (email === '') {
+        showErrorModal('Por favor ingresa tu correo electrónico.');
+        return false;
     }
+    
+    // Validar formato de email
+    console.log('validateEmail function available:', typeof validateEmail);
+    if (!validateEmail(email)) {
+        showErrorModal('Por favor ingresa un correo electrónico válido.');
+        return false;
+    }
+    
+    // Mostrar modal de carga
+    showLoadingModal();
+    
+                try {
+        // Verificar si el email ya existe
+        const emailCheck = await checkEmailExists(email);
+        
+        if (emailCheck.error) {
+            throw new Error(emailCheck.error);
+        }
+        
+        if (emailCheck.exists) {
+            hideLoadingModal();
+            showAlreadyRegisteredModal(email);
+            emailInput.value = '';
+        } else {
+            // Agregar a la waitlist
+            const result = await addToWaitlist(email);
+            
+            if (result.success) {
+                // Enviar email de bienvenida
+                const emailResult = await sendWelcomeEmail(email);
+                hideLoadingModal();
+                
+                if (emailResult.success) {
+                    showSuccessModal(email, '¡Gracias por unirte! Te hemos enviado un email de bienvenida con toda la información. 📧 <strong>Consejo:</strong> Revisa tu carpeta de spam si no lo encuentras en tu bandeja principal.');
+                } else {
+                    console.warn('Email de bienvenida no se pudo enviar:', emailResult.error);
+                    showSuccessModal(email, '¡Gracias por unirte! Te notificaremos cuando lancemos la plataforma.');
+                }
+                emailInput.value = '';
+            } else {
+                throw new Error(result.error);
+            }
+        }
+        
+    } catch (error) {
+        console.error('Error:', error);
+        hideLoadingModal();
+        showErrorModal('Hubo un error al unirse a la lista. Por favor intenta de nuevo.');
+    } finally {
+        // Restaurar botón
+        submitBtn.textContent = originalText;
+        submitBtn.disabled = false;
+    }
+    
     return false;
 }
 
-function joinFinalWaitlist(event) {
+async function joinFinalWaitlist(event) {
     event.preventDefault();
     const emailInput = document.getElementById('final-waiting-email');
-    const successMsg = document.getElementById('finalWaitingSuccess');
     const submitBtn = document.getElementById('finalWaitingBtn');
     const originalText = submitBtn.textContent;
     
-    if (emailInput.value.trim() !== '') {
-        // Show loading state
-        submitBtn.textContent = 'Uniéndose...';
-        submitBtn.disabled = true;
-        
-        // Simulate API call
-        setTimeout(() => {
-            successMsg.style.display = 'flex';
-            emailInput.value = '';
-            submitBtn.textContent = originalText;
-            submitBtn.disabled = false;
-            
-            // Hide success message after 5 seconds
-            setTimeout(() => {
-                successMsg.style.display = 'none';
-            }, 5000);
-        }, 1500);
+    const email = emailInput.value.trim();
+    
+    if (email === '') {
+        showErrorModal('Por favor ingresa tu correo electrónico.');
+        return false;
     }
+    
+    // Validar formato de email
+    if (!validateEmail(email)) {
+        showErrorModal('Por favor ingresa un correo electrónico válido.');
+        return false;
+    }
+    
+    // Mostrar modal de carga
+    showLoadingModal();
+    
+    try {
+        // Verificar si el email ya existe
+        const emailCheck = await checkEmailExists(email);
+        
+        if (emailCheck.error) {
+            throw new Error(emailCheck.error);
+        }
+        
+        if (emailCheck.exists) {
+            hideLoadingModal();
+            showAlreadyRegisteredModal(email);
+            emailInput.value = '';
+        } else {
+            // Agregar a la waitlist
+            const result = await addToWaitlist(email);
+            
+            if (result.success) {
+                // Enviar email de bienvenida
+                const emailResult = await sendWelcomeEmail(email);
+                hideLoadingModal();
+                
+                if (emailResult.success) {
+                    showSuccessModal(email, '¡Gracias por unirte! Te hemos enviado un email de bienvenida con toda la información. 📧 <strong>Consejo:</strong> Revisa tu carpeta de spam si no lo encuentras en tu bandeja principal.');
+                } else {
+                    console.warn('Email de bienvenida no se pudo enviar:', emailResult.error);
+                    showSuccessModal(email, '¡Gracias por unirte! Te notificaremos cuando lancemos la plataforma.');
+                }
+                emailInput.value = '';
+            } else {
+                throw new Error(result.error);
+            }
+        }
+        
+    } catch (error) {
+        console.error('Error:', error);
+        hideLoadingModal();
+        showErrorModal('Hubo un error al unirse a la lista. Por favor intenta de nuevo.');
+    } finally {
+        // Restaurar botón
+        submitBtn.textContent = originalText;
+        submitBtn.disabled = false;
+    }
+    
     return false;
 }
 
@@ -593,4 +723,117 @@ backToTop.addEventListener('mouseenter', () => {
 backToTop.addEventListener('mouseleave', () => {
     backToTop.style.transform = 'translateY(0)';
     backToTop.style.boxShadow = '0 4px 12px rgba(37, 99, 235, 0.3)';
+});
+
+// Modal Functions
+function showSuccessModal(email, message) {
+    const modal = document.getElementById('successModal');
+    const modalEmail = document.getElementById('modalEmail');
+    const modalMessage = modal.querySelector('.modal-message');
+    
+    modalEmail.textContent = email;
+    modalMessage.innerHTML = message;
+    modal.classList.add('show');
+    
+    // Prevent body scroll
+    document.body.style.overflow = 'hidden';
+}
+
+function showErrorModal(message) {
+    const modal = document.getElementById('successModal');
+    const modalIcon = modal.querySelector('.modal-icon i');
+    const modalTitle = modal.querySelector('.modal-title');
+    const modalMessage = modal.querySelector('.modal-message');
+    const modalEmail = document.getElementById('modalEmail');
+    
+    // Change to error style
+    modalIcon.className = 'fas fa-exclamation-triangle';
+    modalIcon.parentElement.style.background = 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)';
+    modalTitle.textContent = '¡Ups! Algo salió mal';
+    modalMessage.innerHTML = message;
+    modalEmail.style.display = 'none';
+    
+    modal.classList.add('show');
+    document.body.style.overflow = 'hidden';
+}
+
+function showLoadingModal() {
+    const modal = document.getElementById('loadingModal');
+    modal.classList.add('show');
+    document.body.style.overflow = 'hidden';
+}
+
+function hideLoadingModal() {
+    const modal = document.getElementById('loadingModal');
+    modal.classList.remove('show');
+    document.body.style.overflow = 'auto';
+}
+
+function closeModal() {
+    const successModal = document.getElementById('successModal');
+    const loadingModal = document.getElementById('loadingModal');
+    
+    successModal.classList.remove('show');
+    loadingModal.classList.remove('show');
+    document.body.style.overflow = 'auto';
+    
+    // Reset success modal to default state
+    const modalIcon = successModal.querySelector('.modal-icon i');
+    const modalTitle = successModal.querySelector('.modal-title');
+    const modalMessage = successModal.querySelector('.modal-message');
+    const modalEmail = document.getElementById('modalEmail');
+    
+    modalIcon.className = 'fas fa-check';
+    modalIcon.parentElement.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+    modalTitle.textContent = '¡Bienvenido a FinnVest! 🚀';
+    modalMessage.innerHTML = '¡Gracias por unirte a nuestra comunidad! Te hemos enviado un email de bienvenida con toda la información que necesitas. 📧 <strong>Consejo:</strong> Revisa tu carpeta de spam si no lo encuentras en tu bandeja principal.';
+    modalEmail.style.display = 'block';
+}
+
+// Función para mostrar modal de "ya registrado"
+function showAlreadyRegisteredModal(email) {
+    const modal = document.getElementById('successModal');
+    const modalIcon = modal.querySelector('.modal-icon i');
+    const modalTitle = modal.querySelector('.modal-title');
+    const modalMessage = modal.querySelector('.modal-message');
+    const modalEmail = document.getElementById('modalEmail');
+    const modalActions = modal.querySelector('.modal-actions');
+    
+    // Cambiar a estilo de "ya registrado"
+    modalIcon.className = 'fas fa-user-check';
+    modalIcon.parentElement.style.background = 'linear-gradient(135deg, #10b981 0%, #059669 100%)';
+    modalTitle.textContent = '¡Ya estás registrado! 🎉';
+    modalMessage.innerHTML = '¡Genial! Ya tienes tu lugar reservado. Lo mejor está por venir, mantente atento a tu correo. 📧 <strong>Consejo:</strong> Revisa tu carpeta de spam si no has recibido nuestros emails anteriores. Te notificaremos por email cuando lancemos la plataforma.';
+    modalEmail.textContent = email;
+    modalEmail.style.display = 'block';
+    
+    // Cambiar botones - solo un botón
+    modalActions.innerHTML = `
+        <button class="modal-btn modal-btn-primary" onclick="closeModal()">
+            <i class="fas fa-check"></i>
+            ¡Perfecto!
+        </button>
+    `;
+    
+    modal.classList.add('show');
+    document.body.style.overflow = 'hidden';
+}
+
+// Close modal when clicking outside
+document.addEventListener('DOMContentLoaded', () => {
+    const modals = document.querySelectorAll('.modal-overlay');
+    modals.forEach(modal => {
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                closeModal();
+            }
+        });
+    });
+    
+    // Close modal with Escape key
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            closeModal();
+        }
+    });
 }); 
