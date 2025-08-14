@@ -227,46 +227,32 @@ document.addEventListener('DOMContentLoaded', () => {
     }, observerOptions);
     
     // Observe elements for animation
-    const animateElements = document.querySelectorAll('.service-rectangle, .benefit-item, .about-content, .waitlist-content');
+    const animateElements = document.querySelectorAll('.service-card, .benefit-item, .about-content, .waitlist-content');
     animateElements.forEach(el => observer.observe(el));
     
-    // Service rectangles animation with enhanced functionality
-    const serviceRectangles = document.querySelectorAll('.service-rectangle');
-    const rectangleObserver = new IntersectionObserver((entries) => {
+    // Service cards animation with enhanced functionality
+    const serviceCards = document.querySelectorAll('.service-card');
+    const cardObserver = new IntersectionObserver((entries) => {
         entries.forEach((entry, index) => {
             if (entry.isIntersecting) {
                 setTimeout(() => {
                     entry.target.style.opacity = '1';
                     entry.target.style.transform = 'translateY(0)';
-                    entry.target.classList.add('visible');
-                }, index * 200);
+                }, index * 100);
             }
         });
     }, {
         threshold: 0.3,
-        rootMargin: '0px 0px -100px 0px'
+        rootMargin: '0px 0px -50px 0px'
     });
     
-    serviceRectangles.forEach(rectangle => {
-        rectangleObserver.observe(rectangle);
+    serviceCards.forEach(card => {
+        cardObserver.observe(card);
     });
     
-    // Add hover effects to service rectangles
-    serviceRectangles.forEach(rectangle => {
-        rectangle.addEventListener('mouseenter', function() {
-            this.style.transform = 'translateY(-5px) scale(1.02)';
-            this.style.boxShadow = '0 20px 40px rgba(0, 0, 0, 0.15)';
-        });
-        
-        rectangle.addEventListener('mouseleave', function() {
-            this.style.transform = 'translateY(0) scale(1)';
-            this.style.boxShadow = '0 10px 30px rgba(0, 0, 0, 0.1)';
-        });
-    });
-    
-    // Add click functionality to service rectangles
-    serviceRectangles.forEach(rectangle => {
-        rectangle.addEventListener('click', function() {
+    // Add click functionality to service cards
+    serviceCards.forEach(card => {
+        card.addEventListener('click', function() {
             // Add a subtle click effect
             this.style.transform = 'scale(0.98)';
             setTimeout(() => {
@@ -274,4 +260,91 @@ document.addEventListener('DOMContentLoaded', () => {
             }, 150);
         });
     });
+    
+    // About Section Number Counter Animation
+    function animateNumbers() {
+        const numberElements = document.querySelectorAll('.stat-number, .highlight-number');
+        
+        numberElements.forEach(element => {
+            const target = parseInt(element.getAttribute('data-target'));
+            if (!target) return;
+            
+            const duration = 2000; // 2 seconds
+            const step = target / (duration / 16); // 60fps
+            let current = 0;
+            
+            const timer = setInterval(() => {
+                current += step;
+                if (current >= target) {
+                    current = target;
+                    clearInterval(timer);
+                }
+                element.textContent = Math.floor(current);
+            }, 16);
+        });
+    }
+    
+    // Enhanced Intersection Observer for About Section
+    const aboutObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                // Start number animation when about section is visible
+                setTimeout(animateNumbers, 500);
+                aboutObserver.unobserve(entry.target);
+            }
+        });
+    }, {
+        threshold: 0.1, // Lower threshold for mobile
+        rootMargin: '0px 0px -50px 0px' // Smaller margin for mobile
+    });
+    
+    const aboutSectionElement = document.querySelector('.about');
+    if (aboutSectionElement) {
+        aboutObserver.observe(aboutSectionElement);
+    }
+    
+    // Fallback: Trigger animation on scroll for mobile devices
+    let aboutAnimationTriggered = false;
+    window.addEventListener('scroll', () => {
+        if (aboutAnimationTriggered) return;
+        
+        const aboutSection = document.querySelector('.about');
+        if (!aboutSection) return;
+        
+        const rect = aboutSection.getBoundingClientRect();
+        const isVisible = rect.top < window.innerHeight && rect.bottom > 0;
+        
+        if (isVisible) {
+            aboutAnimationTriggered = true;
+            setTimeout(animateNumbers, 300);
+        }
+    });
+    
+    // Additional fallback: Trigger on page load for mobile
+    if (window.innerWidth <= 768) {
+        setTimeout(() => {
+            const aboutSection = document.querySelector('.about');
+            if (aboutSection) {
+                const rect = aboutSection.getBoundingClientRect();
+                if (rect.top < window.innerHeight) {
+                    setTimeout(animateNumbers, 500);
+                }
+            }
+        }, 1000);
+    }
+    
+    // Smooth scroll for CTA button
+    const ctaButton = document.querySelector('.cta-button');
+    if (ctaButton) {
+        ctaButton.addEventListener('click', function(e) {
+            e.preventDefault();
+            const waitlistSection = document.querySelector('#waitlist');
+            if (waitlistSection) {
+                waitlistSection.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }
+        });
+    }
 }); 
