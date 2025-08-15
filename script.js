@@ -1,225 +1,167 @@
-// Mobile Navigation Toggle
-const hamburger = document.querySelector('.hamburger');
-const navMenu = document.querySelector('.nav-menu');
-
-hamburger.addEventListener('click', () => {
-    hamburger.classList.toggle('active');
-    navMenu.classList.toggle('active');
+// Wait for DOM to be fully loaded
+document.addEventListener('DOMContentLoaded', function() {
     
-    // Prevent body scroll when menu is open
-    if (navMenu.classList.contains('active')) {
-        document.body.style.overflow = 'hidden';
-    } else {
-        document.body.style.overflow = 'auto';
-    }
-});
-
-// Close mobile menu when clicking on a nav link
-document.querySelectorAll('.nav-link').forEach(link => {
-    link.addEventListener('click', () => {
-        hamburger.classList.remove('active');
-        navMenu.classList.remove('active');
-        document.body.style.overflow = 'auto';
-    });
-});
-
-// Close mobile menu when clicking outside
-document.addEventListener('click', (e) => {
-    if (!hamburger.contains(e.target) && !navMenu.contains(e.target)) {
-        hamburger.classList.remove('active');
-        navMenu.classList.remove('active');
-        document.body.style.overflow = 'auto';
-    }
-});
-
-// Mobile join button click handler
-document.addEventListener('DOMContentLoaded', () => {
-    const mobileJoinBtn = document.querySelector('.mobile-join-btn');
-    if (mobileJoinBtn) {
-        mobileJoinBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-            e.stopPropagation();
+    // Mobile Navigation Elements
+    const hamburger = document.querySelector('.hamburger');
+    const navMenu = document.querySelector('.nav-menu');
+    
+    // Hamburger menu toggle
+    if (hamburger && navMenu) {
+        hamburger.addEventListener('click', function() {
+            hamburger.classList.toggle('active');
+            navMenu.classList.toggle('active');
             
-            // Close the mobile menu
-            hamburger.classList.remove('active');
-            navMenu.classList.remove('active');
-            document.body.style.overflow = 'auto';
-            
-            // Navigate to waitlist section
-            setTimeout(() => {
-                document.getElementById('waitlist').scrollIntoView({ behavior: 'smooth' });
-            }, 300);
+            // Prevent body scroll when menu is open
+            if (navMenu.classList.contains('active')) {
+                document.body.style.overflow = 'hidden';
+            } else {
+                document.body.style.overflow = 'auto';
+            }
         });
     }
-});
-
-// Smooth scrolling for navigation links
-document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-    anchor.addEventListener('click', function (e) {
-        e.preventDefault();
-        const target = document.querySelector(this.getAttribute('href'));
-        if (target) {
-            target.scrollIntoView({
-                behavior: 'smooth',
-                block: 'start'
-            });
+    
+    // Close mobile menu when clicking outside
+    document.addEventListener('click', function(e) {
+        if (hamburger && navMenu) {
+            if (!hamburger.contains(e.target) && !navMenu.contains(e.target)) {
+                hamburger.classList.remove('active');
+                navMenu.classList.remove('active');
+                document.body.style.overflow = 'auto';
+            }
         }
     });
-});
-
-// Navbar background on scroll
-window.addEventListener('scroll', () => {
-    const navbar = document.querySelector('.navbar');
-    if (window.scrollY > 50) {
-        navbar.classList.add('scrolled');
-    } else {
-        navbar.classList.remove('scrolled');
+    
+    // Handle all navigation links (including hamburger menu)
+    const allNavLinks = document.querySelectorAll('a[href^="#"]');
+    allNavLinks.forEach(function(link) {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            // Close mobile menu if open
+            if (hamburger && navMenu) {
+                hamburger.classList.remove('active');
+                navMenu.classList.remove('active');
+                document.body.style.overflow = 'auto';
+            }
+            
+            // Get target section
+            const targetId = this.getAttribute('href');
+            const targetSection = document.querySelector(targetId);
+            
+            if (targetSection) {
+                // Smooth scroll to target
+                targetSection.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }
+        });
+    });
+    
+    // Special handling for CTA button
+    const ctaButton = document.querySelector('.cta-button');
+    if (ctaButton) {
+        ctaButton.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            // Close mobile menu if open
+            if (hamburger && navMenu) {
+                hamburger.classList.remove('active');
+                navMenu.classList.remove('active');
+                document.body.style.overflow = 'auto';
+            }
+            
+            // Navigate to waitlist
+            const waitlistSection = document.querySelector('#waitlist');
+            if (waitlistSection) {
+                waitlistSection.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }
+        });
     }
-});
-
-// Form submission handlers
-document.addEventListener('DOMContentLoaded', () => {
-    // First waiting list form
+    
+    // Navbar background on scroll
+    window.addEventListener('scroll', function() {
+        const navbar = document.querySelector('.navbar');
+        if (navbar) {
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        }
+    });
+    
+    // Form submission handlers
     const waitingForm = document.getElementById('waiting-form');
     const waitingSuccess = document.getElementById('waitingSuccess');
     
     if (waitingForm) {
-        waitingForm.addEventListener('submit', (e) => {
+        waitingForm.addEventListener('submit', function(e) {
             e.preventDefault();
             const email = document.getElementById('waiting-email').value;
             
             if (email) {
                 // Show success message
-                waitingSuccess.style.display = 'block';
+                if (waitingSuccess) {
+                    waitingSuccess.style.display = 'block';
+                }
                 waitingForm.style.display = 'none';
                 
                 // Reset form
                 document.getElementById('waiting-email').value = '';
                 
                 // Hide success message after 5 seconds
-                setTimeout(() => {
-                    waitingSuccess.style.display = 'none';
-                    waitingForm.style.display = 'flex';
+                setTimeout(function() {
+                    if (waitingSuccess) {
+                        waitingSuccess.style.display = 'none';
+                    }
+                    waitingForm.style.display = 'block';
                 }, 5000);
             }
         });
     }
     
     // Final waitlist form
-    const finalWaitlistForm = document.getElementById('final-waitlist-form');
+    const finalWaitlistForm = document.querySelector('.waitlist-form-final');
     const finalWaitingSuccess = document.getElementById('finalWaitingSuccess');
     
     if (finalWaitlistForm) {
-        finalWaitlistForm.addEventListener('submit', (e) => {
+        finalWaitlistForm.addEventListener('submit', function(e) {
             e.preventDefault();
             const email = document.getElementById('final-waiting-email').value;
             
             if (email) {
                 // Show success message
-                finalWaitingSuccess.style.display = 'flex';
+                if (finalWaitingSuccess) {
+                    finalWaitingSuccess.style.display = 'block';
+                }
                 finalWaitlistForm.style.display = 'none';
                 
                 // Reset form
                 document.getElementById('final-waiting-email').value = '';
                 
                 // Hide success message after 5 seconds
-                setTimeout(() => {
-                    finalWaitingSuccess.style.display = 'none';
-                    finalWaitlistForm.style.display = 'flex';
+                setTimeout(function() {
+                    if (finalWaitingSuccess) {
+                        finalWaitingSuccess.style.display = 'none';
+                    }
+                    finalWaitlistForm.style.display = 'block';
                 }, 5000);
             }
         });
     }
-});
-
-// Touch improvements for mobile
-document.addEventListener('DOMContentLoaded', () => {
-    // Add touch feedback to buttons
-    const buttons = document.querySelectorAll('button, .btn, .join-waitlist-btn, .mobile-join-btn');
     
-    buttons.forEach(button => {
-        button.addEventListener('touchstart', () => {
-            button.style.transform = 'scale(0.95)';
-        });
-        
-        button.addEventListener('touchend', () => {
-            button.style.transform = 'scale(1)';
-        });
-    });
-    
-    // Prevent zoom on double tap
-    document.addEventListener('touchend', (e) => {
-        if (e.target.tagName === 'A' || e.target.tagName === 'BUTTON') {
-            e.preventDefault();
-        }
-    });
-});
-
-// Intersection Observer for animations
-document.addEventListener('DOMContentLoaded', () => {
-    // Debug: Check if sections exist
-    const aboutSection = document.querySelector('#about');
-    const aboutContent = document.querySelector('.about-content');
-    const waitlistSection = document.querySelector('#waitlist');
-    const waitlistContent = document.querySelector('.waitlist-content');
-    
-    console.log('About section found:', aboutSection);
-    console.log('About content found:', aboutContent);
-    console.log('Waitlist section found:', waitlistSection);
-    console.log('Waitlist content found:', waitlistContent);
-    
-    // Force sections to be visible
-    if (aboutSection) {
-        aboutSection.style.display = 'block';
-        aboutSection.style.visibility = 'visible';
-        aboutSection.style.opacity = '1';
-    }
-    
-    if (waitlistSection) {
-        waitlistSection.style.display = 'block';
-        waitlistSection.style.visibility = 'visible';
-        waitlistSection.style.opacity = '1';
-    }
-    
-    // Force benefit items to be visible
-    const benefitItems = document.querySelectorAll('.benefit-item');
-    benefitItems.forEach(item => {
-        item.style.display = 'flex';
-        item.style.visibility = 'visible';
-        item.style.opacity = '1';
-    });
-    
-    // Force waitlist benefits container to be visible
-    const waitlistBenefits = document.querySelector('.waitlist-benefits');
-    if (waitlistBenefits) {
-        waitlistBenefits.style.display = 'flex';
-        waitlistBenefits.style.visibility = 'visible';
-        waitlistBenefits.style.opacity = '1';
-    }
-    
-    // Ensure elements stay visible after a delay
-    setTimeout(() => {
-        const allBenefitItems = document.querySelectorAll('.benefit-item');
-        allBenefitItems.forEach(item => {
-            item.style.display = 'flex';
-            item.style.visibility = 'visible';
-            item.style.opacity = '1';
-        });
-        
-        if (waitlistBenefits) {
-            waitlistBenefits.style.display = 'flex';
-            waitlistBenefits.style.visibility = 'visible';
-            waitlistBenefits.style.opacity = '1';
-        }
-    }, 1000);
-    
+    // Intersection Observer for animations
     const observerOptions = {
         threshold: 0.1,
         rootMargin: '0px 0px -50px 0px'
     };
     
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
+    const observer = new IntersectionObserver(function(entries) {
+        entries.forEach(function(entry) {
             if (entry.isIntersecting) {
                 entry.target.classList.add('fade-in');
             }
@@ -228,14 +170,16 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Observe elements for animation
     const animateElements = document.querySelectorAll('.service-card, .benefit-item, .about-content, .waitlist-content');
-    animateElements.forEach(el => observer.observe(el));
+    animateElements.forEach(function(el) {
+        observer.observe(el);
+    });
     
-    // Service cards animation with enhanced functionality
+    // Service cards animation
     const serviceCards = document.querySelectorAll('.service-card');
-    const cardObserver = new IntersectionObserver((entries) => {
-        entries.forEach((entry, index) => {
+    const cardObserver = new IntersectionObserver(function(entries) {
+        entries.forEach(function(entry, index) {
             if (entry.isIntersecting) {
-                setTimeout(() => {
+                setTimeout(function() {
                     entry.target.style.opacity = '1';
                     entry.target.style.transform = 'translateY(0)';
                 }, index * 100);
@@ -246,18 +190,18 @@ document.addEventListener('DOMContentLoaded', () => {
         rootMargin: '0px 0px -50px 0px'
     });
     
-    serviceCards.forEach(card => {
+    serviceCards.forEach(function(card) {
         cardObserver.observe(card);
     });
     
     // Add click functionality to service cards
-    serviceCards.forEach(card => {
+    serviceCards.forEach(function(card) {
         card.addEventListener('click', function() {
             // Add a subtle click effect
             this.style.transform = 'scale(0.98)';
-            setTimeout(() => {
+            setTimeout(function() {
                 this.style.transform = 'scale(1)';
-            }, 150);
+            }.bind(this), 150);
         });
     });
     
@@ -265,7 +209,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function animateNumbers() {
         const numberElements = document.querySelectorAll('.stat-number, .highlight-number');
         
-        numberElements.forEach(element => {
+        numberElements.forEach(function(element) {
             const target = parseInt(element.getAttribute('data-target'));
             if (!target) return;
             
@@ -273,7 +217,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const step = target / (duration / 16); // 60fps
             let current = 0;
             
-            const timer = setInterval(() => {
+            const timer = setInterval(function() {
                 current += step;
                 if (current >= target) {
                     current = target;
@@ -284,9 +228,9 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
     
-    // Enhanced Intersection Observer for About Section
-    const aboutObserver = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
+    // Intersection Observer for About Section
+    const aboutObserver = new IntersectionObserver(function(entries) {
+        entries.forEach(function(entry) {
             if (entry.isIntersecting) {
                 // Start number animation when about section is visible
                 setTimeout(animateNumbers, 500);
@@ -305,7 +249,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Fallback: Trigger animation on scroll for mobile devices
     let aboutAnimationTriggered = false;
-    window.addEventListener('scroll', () => {
+    window.addEventListener('scroll', function() {
         if (aboutAnimationTriggered) return;
         
         const aboutSection = document.querySelector('.about');
@@ -322,7 +266,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Additional fallback: Trigger on page load for mobile
     if (window.innerWidth <= 768) {
-        setTimeout(() => {
+        setTimeout(function() {
             const aboutSection = document.querySelector('.about');
             if (aboutSection) {
                 const rect = aboutSection.getBoundingClientRect();
@@ -333,18 +277,113 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 1000);
     }
     
-    // Smooth scroll for CTA button
-    const ctaButton = document.querySelector('.cta-button');
-    if (ctaButton) {
-        ctaButton.addEventListener('click', function(e) {
-            e.preventDefault();
-            const waitlistSection = document.querySelector('#waitlist');
-            if (waitlistSection) {
-                waitlistSection.scrollIntoView({
-                    behavior: 'smooth',
-                    block: 'start'
-                });
+    // Modal functionality
+    function showModal(email) {
+        const modal = document.getElementById('successModal');
+        const modalEmail = document.getElementById('modalEmail');
+        
+        if (modal && modalEmail) {
+            modalEmail.textContent = email;
+            modal.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+    }
+    
+    function closeModal() {
+        const modal = document.getElementById('successModal');
+        if (modal) {
+            modal.style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+    }
+    
+    // Make closeModal function globally available
+    window.closeModal = closeModal;
+    
+    // Close modal when clicking outside
+    const modalOverlay = document.getElementById('successModal');
+    if (modalOverlay) {
+        modalOverlay.addEventListener('click', function(e) {
+            if (e.target === modalOverlay) {
+                closeModal();
             }
         });
     }
+    
+    // Loading modal functionality
+    function showLoadingModal() {
+        const loadingModal = document.getElementById('loadingModal');
+        if (loadingModal) {
+            loadingModal.style.display = 'flex';
+        }
+    }
+    
+    function hideLoadingModal() {
+        const loadingModal = document.getElementById('loadingModal');
+        if (loadingModal) {
+            loadingModal.style.display = 'none';
+        }
+    }
+    
+    // Make functions globally available
+    window.showLoadingModal = showLoadingModal;
+    window.hideLoadingModal = hideLoadingModal;
+    
+    // Form submission with Supabase (if available)
+    async function joinWaitingList(event) {
+        event.preventDefault();
+        
+        const email = document.getElementById('waiting-email').value;
+        if (!email) return false;
+        
+        showLoadingModal();
+        
+        try {
+            // Simulate API call
+            await new Promise(resolve => setTimeout(resolve, 2000));
+            
+            hideLoadingModal();
+            showModal(email);
+            
+            // Reset form
+            document.getElementById('waiting-email').value = '';
+            
+        } catch (error) {
+            hideLoadingModal();
+            console.error('Error:', error);
+        }
+        
+        return false;
+    }
+    
+    async function joinFinalWaitlist(event) {
+        event.preventDefault();
+        
+        const email = document.getElementById('final-waiting-email').value;
+        if (!email) return false;
+        
+        showLoadingModal();
+        
+        try {
+            // Simulate API call
+            await new Promise(resolve => setTimeout(resolve, 2000));
+            
+            hideLoadingModal();
+            showModal(email);
+            
+            // Reset form
+            document.getElementById('final-waiting-email').value = '';
+            
+        } catch (error) {
+            hideLoadingModal();
+            console.error('Error:', error);
+        }
+        
+        return false;
+    }
+    
+    // Make functions globally available
+    window.joinWaitingList = joinWaitingList;
+    window.joinFinalWaitlist = joinFinalWaitlist;
+    
 }); 
