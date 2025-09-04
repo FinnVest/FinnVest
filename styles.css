@@ -6,7 +6,7 @@
     --bg-tertiary: #1a1a1a;
     
     /* Vibrant Gradients - More Colors */
-    --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    --gradient-primary: linear-gradient(135deg, #007BFF 0%, #0056CC 100%);
     --gradient-secondary: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
     --gradient-tertiary: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
     --gradient-accent: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
@@ -98,6 +98,13 @@ body {
     display: flex;
     align-items: center;
     gap: 0.5rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.nav-logo:hover {
+    transform: scale(1.05);
+    opacity: 0.8;
 }
 
 .cow-logo {
@@ -204,18 +211,23 @@ body {
 
 /* Hero Section */
 .hero-section {
-    width: 1400px;
+    width: 100vw;
     height: 800px;
     position: relative;
-    background: #090129;
-    margin: 0 auto;
+    background: #06255f;
+    margin: 0;
+    padding: 0;
     overflow: hidden;
+    left: 50%;
+    right: 50%;
+    margin-left: -50vw;
+    margin-right: -50vw;
 }
 
 /* Learn Section (Second Section) */
 .learn-section {
     position: relative;
-    background: radial-gradient(60% 60% at 50% 40%, #0B1194 0%, #090129 60%, #060014 100%);
+    background: radial-gradient(60% 60% at 50% 40%, #0A3A7F 0%, #06255f 60%, #041A4F 100%);
     padding: 120px 20px;
     min-height: 100vh;
     display: flex;
@@ -304,7 +316,7 @@ body {
 
 /* Levels Section - matches learn-section background for seamless scroll */
 .levels-section {
-    background: radial-gradient(60% 60% at 50% 40%, #0B1194 0%, #090129 60%, #060014 100%);
+    background: radial-gradient(60% 60% at 50% 40%, #0A3A7F 0%, #06255f 60%, #041A4F 100%);
     padding: 120px 20px 140px;
 }
 
@@ -401,7 +413,7 @@ body {
 .level-advanced h3 { background: rgba(255,255,255,0.06); }
 .level-advanced h3::before { content: '📈 '; }
 
-.level-expert { background: linear-gradient(180deg, #D64555 0%, #B33946 50%); }
+.level-expert { background: linear-gradient(180deg, #FF8C00 0%, #FF6B35 50%); }
 .level-expert h3 { background: rgba(255,255,255,0.06); }
 .level-expert h3::before { content: '🚀 '; }
 
@@ -423,7 +435,7 @@ body {
 
 /* Why FinnVest Section - Visual Comparison */
 .why-finnvest-section {
-    background: #0A1128;
+    background: #06255f;
     padding: 120px 20px;
     color: #EFFFFE;
 }
@@ -537,13 +549,13 @@ body {
 }
 
 .finnvest-highlight {
-    background: rgba(68, 204, 68, 0.1);
-    border: 2px solid #44CC44;
+    background: rgba(0, 123, 255, 0.1);
+    border: 2px solid #007BFF;
     border-radius: 25px;
     padding: 40px 30px;
     text-align: center;
     position: relative;
-    box-shadow: 0 20px 40px rgba(68, 204, 68, 0.3);
+    box-shadow: 0 20px 40px rgba(0, 123, 255, 0.3);
 }
 
 
@@ -563,7 +575,7 @@ body {
 }
 
 .feature-pill {
-    background: rgba(68, 204, 68, 0.2);
+    background: rgba(0, 123, 255, 0.2);
     color: #EFFFFE;
     padding: 10px 16px;
     border-radius: 25px;
@@ -571,13 +583,13 @@ body {
     font-weight: 600;
     font-size: 14px;
     backdrop-filter: blur(10px);
-    border: 1px solid #44CC44;
+    border: 1px solid #007BFF;
 }
 
 .price-tag.affordable {
-    background: #44CC44;
-    color: #000000;
-    box-shadow: 0 4px 12px rgba(68, 204, 68, 0.3);
+    background: #007BFF;
+    color: #FFFFFF;
+    box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
 }
 
 @media (max-width: 1024px) {
@@ -600,7 +612,7 @@ body {
 
 /* Practice Section - Risk-Free Trading */
 .practice-section {
-    background: #0A1128;
+    background: #06255f;
     padding: 120px 20px;
     color: #EFFFFE;
     position: relative;
@@ -767,7 +779,12 @@ body {
     .practice-button { padding: 15px 30px; font-size: 16px; }
     .practice-right { min-height: 200px; }
     .app-image-container { padding: 10px; }
-    .app-image { max-height: 250px; }
+    .app-image { max-height: 400px; width: 100%; }
+}
+
+@media (max-width: 480px) {
+    .app-image { max-height: 450px; width: 100%; }
+    .app-image-container { padding: 5px; }
 }
 
 
@@ -1514,7 +1531,7 @@ section {
 
 /* Final CTA Section */
 .final-cta-section {
-    background: #0A1128;
+    background: #06255f;
     padding: 120px 20px;
     color: #EFFFFE;
     text-align: center;
@@ -1813,6 +1830,21 @@ section {
     .final-cta-button { padding: 15px 25px; font-size: 14px; }
 }
 
+/* Mobile Email Input Enhancements */
+input[type="email"] {
+    font-size: 16px; /* Prevents zoom on iOS */
+    -webkit-appearance: none;
+    appearance: none;
+}
+
+/* Enhanced autocomplete styling */
+input[type="email"]:autofill {
+    background-color: rgba(0, 123, 255, 0.1) !important;
+    -webkit-box-shadow: 0 0 0 1000px rgba(0, 123, 255, 0.1) inset !important;
+    -webkit-text-fill-color: #EFFFFE !important;
+    transition: background-color 5000s ease-in-out 0s;
+}
+
 /* Success Notification Popup */
 .success-notification {
     position: fixed;
@@ -1940,7 +1972,7 @@ section {
 
 /* Footer */
 .footer {
-    background: var(--bg-secondary);
+    background: #1a237e;
     padding: 2rem 0;
     border-top: 1px solid rgba(255, 255, 255, 0.1);
 }

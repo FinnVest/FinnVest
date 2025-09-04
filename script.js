@@ -206,6 +206,63 @@ document.addEventListener('DOMContentLoaded', function() {
     // Make closeNotification globally available
     window.closeNotification = closeNotification;
     
+    // Logo click handler - scroll to hero section
+    function scrollToHero() {
+        const heroSection = document.querySelector('.hero-section');
+        if (heroSection) {
+            heroSection.scrollIntoView({
+                behavior: 'smooth',
+                block: 'start'
+            });
+        }
+    }
+    
+    // Make scrollToHero globally available
+    window.scrollToHero = scrollToHero;
+    
+    // Enhanced mobile autocomplete for better UX
+    function enhanceMobileAutocomplete() {
+        const emailInputs = document.querySelectorAll('input[type="email"]');
+        
+        emailInputs.forEach(input => {
+            // Skip the hero email input to avoid scroll sensitivity
+            if (input.id === 'heroEmailInput') {
+                return;
+            }
+            
+            // Add focus event to trigger autocomplete
+            input.addEventListener('focus', function() {
+                // For iOS Safari - trigger autocomplete suggestions
+                if (navigator.userAgent.match(/iPhone|iPad|iPod/i)) {
+                    // Force focus to trigger keyboard suggestions
+                    this.click();
+                }
+            });
+            
+            // Add touch event for better mobile interaction
+            input.addEventListener('touchstart', function() {
+                this.focus();
+            });
+            
+            // Visual feedback when email is autofilled
+            input.addEventListener('input', function() {
+                if (this.value && this.value.includes('@')) {
+                    this.style.borderColor = '#44CC44';
+                    this.style.boxShadow = '0 0 10px rgba(68, 204, 68, 0.3)';
+                    
+                    // Reset styling after 2 seconds
+                    setTimeout(() => {
+                        this.style.borderColor = '';
+                        this.style.boxShadow = '';
+                    }, 2000);
+                }
+            });
+        });
+    }
+    
+    // Initialize mobile autocomplete enhancement
+    enhanceMobileAutocomplete();
+    
 
     // Add form event listeners
     const heroForm = document.getElementById('heroForm');

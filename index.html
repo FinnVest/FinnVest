@@ -9,9 +9,9 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,700;1,9..40,400;1,9..40,500;1,9..40,700&family=Inter:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&family=Poppins:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css?v=13.6">
+    <link rel="stylesheet" href="styles.css?v=14.9">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="script.js?v=6.7" defer></script>
+    <script src="script.js?v=7.1" defer></script>
 </head>
 <body>
     <!-- Success Notification Popup -->
@@ -34,7 +34,7 @@
     <!-- Navigation -->
     <nav class="navbar">
         <div class="nav-container">
-            <div class="nav-logo">
+            <div class="nav-logo" id="navLogo" onclick="scrollToHero()">
                 <img src="images/white-bull.png" alt="FinnVest Logo" class="cow-logo">
                 <img src="images/finnvest-logo.png" alt="FinnVest Platform" class="finnvest-logo">
             </div>
@@ -121,7 +121,16 @@
         <!-- Email Input and Button (Below Game Text) -->
         <form class="email-section" id="heroForm">
             <div class="email-input">
-                <input type="email" placeholder="Tu dirección de correo" required>
+                <input type="email" 
+                       id="heroEmailInput" 
+                       name="email" 
+                       placeholder="Tu dirección de correo" 
+                       autocomplete="email"
+                       inputmode="email"
+                       autocapitalize="off"
+                       autocorrect="off"
+                       spellcheck="false"
+                       required>
             </div>
             <div class="subscribe-button">
                 <button type="submit">Unirse</button>
@@ -339,7 +348,17 @@
                 </div>
                 <form class="final-cta-input-group" id="finalForm">
                     <div class="input-container">
-                        <input type="email" class="final-cta-input" placeholder="Ingresa tu email" required>
+                        <input type="email" 
+                               id="finalEmailInput" 
+                               name="email"
+                               class="final-cta-input" 
+                               placeholder="Ingresa tu email" 
+                               autocomplete="email"
+                               inputmode="email"
+                               autocapitalize="off"
+                               autocorrect="off"
+                               spellcheck="false"
+                               required>
                         <button type="submit" class="final-cta-button">
                             <span>¡Quiero empezar!</span>
                             <i class="fas fa-arrow-right"></i>
