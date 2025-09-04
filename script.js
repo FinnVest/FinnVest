@@ -66,7 +66,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }, observerOptions);
 
     // Observe elements for animation
-    const animatedElements = document.querySelectorAll('.learning-card, .step, .benefit-card, .stat, .feature-item, .testimonial-card');
+    const animatedElements = document.querySelectorAll('.problem-card, .feature-item, .benefit-card, .stat-item, .testimonial-card');
     animatedElements.forEach(el => {
         el.style.opacity = '0';
         el.style.transform = 'translateY(30px)';
@@ -95,7 +95,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Observe stats sections for number animation
-    const statsSections = document.querySelectorAll('.stats-section, .community-section');
+    const statsSections = document.querySelectorAll('.stats-section');
     statsSections.forEach(section => {
         const statsObserver = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
@@ -117,7 +117,7 @@ document.addEventListener('DOMContentLoaded', function() {
         orbs.forEach((orb, index) => {
             const speed = 0.5 + (index * 0.1);
             const yPos = -(scrolled * speed);
-            orb.style.transform = `translateY(${yPos}px) rotate(${scrolled * 0.1}deg)`;
+            orb.style.transform = `translateY(${yPos}px)`;
         });
     }
 
@@ -139,68 +139,78 @@ document.addEventListener('DOMContentLoaded', function() {
     window.addEventListener('scroll', throttle(handleParallax, 16));
 
     // Form submission handlers
-    window.joinWaitingList = function(event) {
+    function joinWaitingList(event) {
         event.preventDefault();
         const form = event.target;
-        const email = form.querySelector('#waiting-email').value;
-        const successDiv = document.getElementById('waitingSuccess');
-        const submitBtn = document.getElementById('waitingBtn');
-
+        const email = form.querySelector('input[type="email"]').value;
+        const button = form.querySelector('button');
+        const originalText = button.innerHTML;
+        
         // Show loading state
-        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enviando...';
-        submitBtn.disabled = true;
-
+        button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Procesando...';
+        button.disabled = true;
+        
         // Simulate API call
         setTimeout(() => {
-            // Reset button
-            submitBtn.innerHTML = '<span>Únete a la lista de espera</span><i class="fas fa-arrow-right"></i>';
-            submitBtn.disabled = false;
-
             // Show success message
-            successDiv.style.display = 'block';
+            const successDiv = document.getElementById('waitingSuccess');
+            successDiv.style.display = 'flex';
+            
+            // Reset form
             form.reset();
-
+            button.innerHTML = originalText;
+            button.disabled = false;
+            
             // Hide success message after 5 seconds
             setTimeout(() => {
                 successDiv.style.display = 'none';
             }, 5000);
         }, 1500);
+    }
 
-        return false;
-    };
-
-    window.joinFinalWaitlist = function(event) {
+    function joinFinalWaitlist(event) {
         event.preventDefault();
         const form = event.target;
-        const email = form.querySelector('#final-email').value;
-        const successDiv = document.getElementById('finalSuccess');
-        const submitBtn = document.getElementById('finalBtn');
-
+        const email = form.querySelector('input[type="email"]').value;
+        const button = form.querySelector('button');
+        const originalText = button.innerHTML;
+        
         // Show loading state
-        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enviando...';
-        submitBtn.disabled = true;
-
+        button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Procesando...';
+        button.disabled = true;
+        
         // Simulate API call
         setTimeout(() => {
-            // Reset button
-            submitBtn.innerHTML = '<span>Regístrate ahora</span><i class="fas fa-rocket"></i>';
-            submitBtn.disabled = false;
-
             // Show success message
-            successDiv.style.display = 'block';
+            const successDiv = document.getElementById('finalSuccess');
+            successDiv.style.display = 'flex';
+            
+            // Reset form
             form.reset();
-
+            button.innerHTML = originalText;
+            button.disabled = false;
+            
             // Hide success message after 5 seconds
             setTimeout(() => {
                 successDiv.style.display = 'none';
             }, 5000);
         }, 1500);
+    }
 
-        return false;
-    };
+    // Add form event listeners
+    const heroForm = document.getElementById('heroForm');
+    const finalForm = document.getElementById('finalForm');
+    
+    if (heroForm) {
+        heroForm.addEventListener('submit', joinWaitingList);
+    }
+    
+    if (finalForm) {
+        finalForm.addEventListener('submit', joinFinalWaitlist);
+    }
 
     // Add hover effects for interactive elements
-    const interactiveElements = document.querySelectorAll('.learning-card, .benefit-card, .step, .feature-item, .testimonial-card');
+    const interactiveElements = document.querySelectorAll('.problem-card, .benefit-card, .feature-item, .testimonial-card');
     interactiveElements.forEach(element => {
         element.addEventListener('mouseenter', function() {
             this.style.transform = 'translateY(-8px) scale(1.02)';
@@ -212,7 +222,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Add click effects for buttons
-    const buttons = document.querySelectorAll('.cta-button, .final-cta-button, .join-waitlist-btn');
+    const buttons = document.querySelectorAll('.cta-button, .final-cta-button');
     buttons.forEach(button => {
         button.addEventListener('click', function(e) {
             // Create ripple effect
@@ -254,7 +264,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
 
-        .cta-button, .final-cta-button, .join-waitlist-btn {
+        .cta-button, .final-cta-button {
             position: relative;
             overflow: hidden;
         }
@@ -355,7 +365,7 @@ document.addEventListener('DOMContentLoaded', function() {
         particle.className = 'particle';
         particle.style.left = Math.random() * 100 + '%';
         particle.style.animationDuration = (Math.random() * 3 + 2) + 's';
-        particle.style.animationDelay = Math.random() * 2 + 's';
+        particle.style.opacity = Math.random() * 0.5 + 0.1;
         
         document.body.appendChild(particle);
         
@@ -372,9 +382,9 @@ document.addEventListener('DOMContentLoaded', function() {
     particleStyle.textContent = `
         .particle {
             position: fixed;
-            width: 2px;
-            height: 2px;
-            background: rgba(255, 255, 255, 0.5);
+            width: 4px;
+            height: 4px;
+            background: var(--gradient-primary);
             border-radius: 50%;
             pointer-events: none;
             animation: particle-float 5s linear infinite;
@@ -383,17 +393,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
         @keyframes particle-float {
             0% {
-                transform: translateY(100vh) scale(0);
-                opacity: 0;
-            }
-            10% {
-                opacity: 1;
-            }
-            90% {
+                transform: translateY(100vh) rotate(0deg);
                 opacity: 1;
             }
             100% {
-                transform: translateY(-100px) scale(1);
+                transform: translateY(-100px) rotate(360deg);
                 opacity: 0;
             }
         }
@@ -434,20 +438,15 @@ document.addEventListener('DOMContentLoaded', function() {
     // Add gradient animation to gradient text
     const gradientTexts = document.querySelectorAll('.gradient-text');
     gradientTexts.forEach(text => {
-        text.style.backgroundSize = '200% 200%';
-        text.style.animation = 'gradient-shift 3s ease infinite';
+        text.style.animation = 'gradient-shift 3s ease-in-out infinite';
     });
 
     // Add CSS for gradient animation
     const gradientStyle = document.createElement('style');
     gradientStyle.textContent = `
         @keyframes gradient-shift {
-            0%, 100% {
-                background-position: 0% 50%;
-            }
-            50% {
-                background-position: 100% 50%;
-            }
+            0%, 100% { filter: hue-rotate(0deg); }
+            50% { filter: hue-rotate(30deg); }
         }
     `;
     document.head.appendChild(gradientStyle);
@@ -471,8 +470,8 @@ document.addEventListener('DOMContentLoaded', function() {
             left: 0;
             width: 0%;
             height: 3px;
-            background: linear-gradient(90deg, #667eea, #764ba2, #f093fb);
-            z-index: 10000;
+            background: var(--gradient-primary);
+            z-index: 9999;
             transition: width 0.1s ease;
         }
     `;
@@ -516,5 +515,8 @@ document.addEventListener('DOMContentLoaded', function() {
         card.style.animationDelay = `${index * 0.2}s`;
     });
 
-    console.log('FinnVest landing page initialized with updated content and logos!');
+    console.log('🚀 FinnVest Website Loaded Successfully!');
+    console.log('📱 Mobile-friendly design with smooth animations');
+    console.log('🎨 Dark theme with vibrant gradients');
+    console.log('⚡ Optimized for performance');
 }); 
