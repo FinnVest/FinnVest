@@ -1,5 +1,7 @@
 // Wait for DOM to be fully loaded
 document.addEventListener('DOMContentLoaded', function() {
+    
+    
     // Mobile Navigation
     const hamburger = document.querySelector('.hamburger');
     const navMenu = document.querySelector('.nav-menu');
@@ -152,19 +154,13 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Simulate API call
         setTimeout(() => {
-            // Show success message
-            const successDiv = document.getElementById('waitingSuccess');
-            successDiv.style.display = 'flex';
+            // Show success notification
+            showSuccessNotification();
             
             // Reset form
             form.reset();
             button.innerHTML = originalText;
             button.disabled = false;
-            
-            // Hide success message after 5 seconds
-            setTimeout(() => {
-                successDiv.style.display = 'none';
-            }, 5000);
         }, 1500);
     }
 
@@ -181,21 +177,35 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Simulate API call
         setTimeout(() => {
-            // Show success message
-            const successDiv = document.getElementById('finalSuccess');
-            successDiv.style.display = 'flex';
+            // Show success notification
+            showSuccessNotification();
             
             // Reset form
             form.reset();
             button.innerHTML = originalText;
             button.disabled = false;
-            
-            // Hide success message after 5 seconds
-            setTimeout(() => {
-                successDiv.style.display = 'none';
-            }, 5000);
         }, 1500);
     }
+
+    // Success notification functions
+    function showSuccessNotification() {
+        const notification = document.getElementById('successNotification');
+        notification.classList.add('show');
+        
+        // Auto-hide after 6 seconds
+        setTimeout(() => {
+            closeNotification();
+        }, 6000);
+    }
+
+    function closeNotification() {
+        const notification = document.getElementById('successNotification');
+        notification.classList.remove('show');
+    }
+
+    // Make closeNotification globally available
+    window.closeNotification = closeNotification;
+    
 
     // Add form event listeners
     const heroForm = document.getElementById('heroForm');
