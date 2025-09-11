@@ -8,8 +8,8 @@
     <link rel="icon" type="image/png" href="favicon.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,700;1,9..40,400;1,9..40,500;1,9..40,700&family=Inter:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&family=Poppins:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css?v=14.9">
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,700;1,9..40,400;1,9..40,500;1,9..40,700&family=Inter:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&family=Poppins:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css?v=19.9">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="script.js?v=7.1" defer></script>
 </head>
@@ -65,81 +65,56 @@
             <div class="floating-orb orb-5"></div>
         </div>
         
-        <!-- Lanterns Background -->
-        <div class="lanterns-bg"></div>
-        
-        <!-- Floating Icons -->
-        <div class="floating-icons">
-            <img src="images/purple-icon.png" alt="Purple Icon" class="floating-icon purple-icon">
-            <img src="images/pink-icon.png" alt="Pink Icon" class="floating-icon pink-icon">
-            <img src="images/blue-icon.png" alt="Blue Icon" class="floating-icon blue-icon">
-            <img src="images/gray-icon.png" alt="Gray Icon" class="floating-icon gray-icon">
-            <img src="images/green-icon.png" alt="Green Icon" class="floating-icon green-icon">
-            <img src="images/orange-icon.png" alt="Orange Icon" class="floating-icon orange-icon">
-        </div>
-        
-        <!-- Floating Questions -->
-        <div class="floating-questions">
-            <div class="question question-1">¿Cómo invertir<br>con poco dinero?</div>
-            <div class="question question-2">¿Cómo abrir una<br>cuenta de inversión?</div>
-            <div class="question question-3">¿Cómo invertir<br>en la bolsa?</div>
-            <div class="question question-4">¿Cómo invertir<br>en dólares?</div>
-            <div class="question question-5">¿Qué es<br>un ETF?</div>
-            <div class="question question-6">¿Cuál es la mejor app<br>para invertir?</div>
-        </div>
-        
-        <!-- "Aprender a" Text Box -->
-        <div class="aprender-text">
-            <h1>Aprender a</h1>
-        </div>
-        
-        <!-- "invertir..." Text Box -->
-        <div class="invertir-text">
-            <h1>invertir...</h1>
-        </div>
-        
-        <!-- Phone Mockup (Centered) -->
-        <div class="phone-mockup phone-mockup-fixed">
-            <img src="images/phone-central.png" alt="Phone Mockup" class="phone-image">
-        </div>
-        
-        <!-- "cambiará tu" Text Box -->
-        <div class="cambiara-text">
-            <h2>cambiará tu</h2>
-        </div>
-        
-        <!-- "futuro" Text Box -->
-        <div class="futuro-text">
-            <h2>futuro</h2>
-        </div>
-        
-        <!-- Game Text (Below Phone) -->
-        <div class="game-text">
-            <span>JUEGA, GANA, Y APRENDE</span>
-        </div>
-        
-        <!-- Email Input and Button (Below Game Text) -->
-        <form class="email-section" id="heroForm">
-            <div class="email-input">
-                <input type="email" 
-                       id="heroEmailInput" 
-                       name="email" 
-                       placeholder="Tu dirección de correo" 
-                       autocomplete="email"
-                       inputmode="email"
-                       autocapitalize="off"
-                       autocorrect="off"
-                       spellcheck="false"
-                       required>
+        <!-- Hero Content Container -->
+        <div class="hero-content">
+            <!-- Left Side - Text Content -->
+            <div class="hero-left">
+                <img src="images/herotext.png" alt="Aprender a invertir cambiará tu futuro..." class="hero-title-image">
+                <img src="images/subheadtext.png" alt="Todo lo que necesitas saber sobre inversión en un solo lugar" class="hero-subtitle-image">
+                
+                <!-- Email Input and Button -->
+                <form class="email-section" id="heroForm">
+                    <div class="email-input">
+                        <input type="email" 
+                               id="heroEmailInput" 
+                               name="email" 
+                               placeholder="Tu dirección de correo" 
+                               autocomplete="email"
+                               inputmode="email"
+                               autocapitalize="off"
+                               autocorrect="off"
+                               spellcheck="false"
+                               required>
+                    </div>
+                    <div class="subscribe-button">
+                        <button type="submit">Unirse</button>
+                    </div>
+                </form>
+                
+                <!-- CTA Text (Below Email Form) -->
+                <p class="hero-cta-below">¡Únete a la lista de espera para el lanzamiento!</p>
+                
+                <!-- Feature Icons (Below CTA Text) -->
+                <div class="hero-icons">
+                    <img src="images/logos.png" alt="FinnVest Features" class="feature-icons">
+                </div>
             </div>
-            <div class="subscribe-button">
-                <button type="submit">Unirse</button>
+            
+            <!-- Right Side - Phone Mockup -->
+            <div class="hero-right">
+                <img src="images/heroimage.png" alt="FinnVest App Preview" class="hero-phone-image">
             </div>
-        </form>
-        
-        <!-- CTA Text (Bottom) -->
-        <div class="cta-text">
-            <p>¡Únete a la lista de espera para el lanzamiento!</p>
+            
+            <!-- Mobile-only content below phone image -->
+            <div class="hero-mobile-bottom">
+                <!-- CTA Text (Below Phone Image on Mobile) -->
+                <p class="hero-cta-below">¡Únete a la lista de espera para el lanzamiento!</p>
+                
+                <!-- Feature Icons (Below CTA Text on Mobile) -->
+                <div class="hero-icons">
+                    <img src="images/logos.png" alt="FinnVest Features" class="feature-icons">
+                </div>
+            </div>
         </div>
     </section>
 
@@ -248,12 +223,35 @@
                 </div>
                 <div class="practice-right">
                     <div class="app-image-container">
-                        <img src="images/investing.png" alt="FinnVest App - Practica sin riesgo" class="app-image">
+                        <img src="images/phones.png" alt="FinnVest App - Practica sin riesgo" class="app-image">
                     </div>
                 </div>
             </div>
             <div class="practice-cta">
                 <a href="#waitlist" class="practice-button">Comenzar a practicar</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Experts Section -->
+    <section id="experts" class="experts-section">
+        <div class="section-content">
+            <h2 class="section-title gradient-text">
+                Habla con los expertos
+            </h2>
+            <p class="section-description">
+                Chatea con los cracks de las inversiones y aprende de su forma de pensar el mercado.
+            </p>
+            <div class="experts-container">
+                <div class="expert-item">
+                    <img src="images/charlie.png" alt="Charlie Expert" class="expert-image">
+                </div>
+                <div class="expert-item">
+                    <img src="images/warren.png" alt="Warren Expert" class="expert-image">
+                </div>
+                <div class="expert-item">
+                    <img src="images/cathie.png" alt="Cathie Expert" class="expert-image">
+                </div>
             </div>
         </div>
     </section>
@@ -265,8 +263,7 @@
                 ¿Por qué elegir FinnVest?
             </h2>
             <p class="section-description">
-                Los cursos de inversión son caros y complicados. Sin conocimiento, pierdes dinero. 
-                FinnVest es la solución perfecta: accesible, divertida y sin riesgo.
+                Olvídate de cursos aburridos y caros. En FinnVest aprendes sobre inversiones paso a paso, jugando y aplicando lo aprendido en la vida real.
             </p>
             <div class="comparison-container">
                 <div class="comparison-side comparison-left">
