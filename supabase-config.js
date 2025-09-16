@@ -6,8 +6,15 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // Debug: Check if Supabase is loaded
+console.log('🔧 Supabase config script loaded!');
 console.log('🔧 Supabase client initialized:', supabase);
 console.log('🔧 Supabase URL:', SUPABASE_URL);
+
+// Test if functions are available globally
+window.testSupabase = function() {
+    console.log('🧪 Test function called - Supabase is working!');
+    return 'Supabase functions are available';
+};
 
 // Function to add email to waitlist
 async function addToWaitlist(email) {
