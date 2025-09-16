@@ -140,103 +140,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Add scroll event listener with throttling
     window.addEventListener('scroll', throttle(handleParallax, 16));
 
-    // Form submission handlers
-    async function joinWaitingList(event) {
-        event.preventDefault();
-        const form = event.target;
-        const email = form.querySelector('input[type="email"]').value;
-        const button = form.querySelector('button');
-        const originalText = button.innerHTML;
-        
-        // Show loading state
-        button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Procesando...';
-        button.disabled = true;
-        
-        try {
-            // Check if email already exists
-            const emailCheck = await checkEmailExists(email);
-            if (emailCheck.exists) {
-                alert('Este email ya está registrado en nuestra lista de espera.');
-                button.innerHTML = originalText;
-                button.disabled = false;
-                return;
-            }
-            
-            // Add to waitlist
-            const result = await addToWaitlist(email);
-            
-            if (result.success) {
-                showSuccessNotification();
-                form.reset();
-            } else {
-                alert('Error al registrarse: ' + result.error);
-            }
-        } catch (error) {
-            console.error('Error:', error);
-            alert('Error al registrarse. Por favor, inténtalo de nuevo.');
-        } finally {
-            button.innerHTML = originalText;
-            button.disabled = false;
-        }
-    }
-
-    async function joinFinalWaitlist(event) {
-        event.preventDefault();
-        const form = event.target;
-        const email = form.querySelector('input[type="email"]').value;
-        const button = form.querySelector('button');
-        const originalText = button.innerHTML;
-        
-        // Show loading state
-        button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Procesando...';
-        button.disabled = true;
-        
-        try {
-            // Check if email already exists
-            const emailCheck = await checkEmailExists(email);
-            if (emailCheck.exists) {
-                alert('Este email ya está registrado en nuestra lista de espera.');
-                button.innerHTML = originalText;
-                button.disabled = false;
-                return;
-            }
-            
-            // Add to waitlist
-            const result = await addToWaitlist(email);
-            
-            if (result.success) {
-                showSuccessNotification();
-                form.reset();
-            } else {
-                alert('Error al registrarse: ' + result.error);
-            }
-        } catch (error) {
-            console.error('Error:', error);
-            alert('Error al registrarse. Por favor, inténtalo de nuevo.');
-        } finally {
-            button.innerHTML = originalText;
-            button.disabled = false;
-        }
-    }
-
-    // Success notification functions
-    function showSuccessNotification() {
-        const notification = document.getElementById('successNotification');
-        notification.classList.add('show');
-        
-        // Auto-hide after 6 seconds
-        setTimeout(() => {
-            closeNotification();
-        }, 6000);
-    }
-
-    function closeNotification() {
-        const notification = document.getElementById('successNotification');
-        notification.classList.remove('show');
-    }
-
-    // Make closeNotification globally available
-    window.closeNotification = closeNotification;
+    // Form submission handlers are now in HTML script
     
     // Logo click handler - scroll to hero section
     function scrollToHero() {
@@ -296,28 +200,8 @@ document.addEventListener('DOMContentLoaded', function() {
     enhanceMobileAutocomplete();
     
 
-    // Add form event listeners
-    const heroForm = document.getElementById('heroForm');
-    const finalForm = document.getElementById('finalForm');
-    
-    console.log('🔍 Hero form found:', heroForm);
-    console.log('🔍 Final form found:', finalForm);
-    console.log('🔍 joinWaitingList function:', typeof joinWaitingList);
-    console.log('🔍 joinFinalWaitlist function:', typeof joinFinalWaitlist);
-    
-    if (heroForm) {
-        heroForm.addEventListener('submit', function(event) {
-            console.log('🚀 Hero form submitted!');
-            joinWaitingList(event);
-        });
-    }
-    
-    if (finalForm) {
-        finalForm.addEventListener('submit', function(event) {
-            console.log('🚀 Final form submitted!');
-            joinFinalWaitlist(event);
-        });
-    }
+    // Form event listeners are now handled in the HTML script
+    console.log('🔍 Form event listeners are handled in HTML script');
 
     // Add hover effects for interactive elements
     const interactiveElements = document.querySelectorAll('.problem-card, .benefit-card, .feature-item, .testimonial-card');

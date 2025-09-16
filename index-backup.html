@@ -8,7 +8,7 @@
     <link rel="icon" type="image/png" href="favicon.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,700;1,9..40,400;1,9..40,500;1,9..40,600;1,9..40,700&family=Inter:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&family=Poppins:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,700;1,9..40,400;1,9..40,500;1,9..40,700&family=Inter:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&family=Poppins:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css?v=20.0">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -202,6 +202,380 @@
     <script src="script.js?v=7.1" defer></script>
 </head>
 <body>
+            try {
+                const { data, error } = await supabase
+                    .from('waitlist')
+                    .select('email')
+                    .eq('email', email.toLowerCase().trim())
+                    .single();
+
+                if (error && error.code !== 'PGRST116') { // PGRST116 = no rows returned
+                    console.error('Error checking email:', error);
+                    return { exists: false, error: error.message };
+                }
+
+                return { exists: !!data, error: null };
+            } catch (error) {
+                console.error('Error:', error);
+                return { exists: false, error: error.message };
+            }
+        }
+
+        // Form submission handlers
+        let isSubmitting = false; // Flag to prevent multiple submissions
+        let lastSubmissionTime = 0; // Track last submission time
+        let buttonLocked = false; // Lock buttons after successful submission
+        
+        function joinWaitingList(event) {
+            event.preventDefault();
+            
+            // Prevent multiple submissions with time check
+            const currentTime = Date.now();
+            if (isSubmitting || (currentTime - lastSubmissionTime) < 3000 || buttonLocked) {
+                console.log('🔧 Already submitting, too soon, or button locked - ignoring submission');
+                return;
+            }
+            
+            isSubmitting = true;
+            lastSubmissionTime = currentTime;
+            console.log('🚀 Hero form submitted!');
+            const form = event.target;
+            const email = form.querySelector('input[type="email"]').value;
+            const button = form.querySelector('button');
+            const originalText = button.innerHTML;
+            
+            console.log('🔧 Original button text:', originalText);
+            
+            // Show loading state
+            button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Procesando...';
+            button.disabled = true;
+            
+            console.log('🔧 Button set to loading state');
+            
+            // Use setTimeout to simulate async behavior and ensure button reset
+            setTimeout(async () => {
+                try {
+                    console.log('🔧 Starting email check...');
+                    // Check if email already exists
+                    const emailCheck = await checkEmailExists(email);
+                    console.log('🔧 Email check result:', emailCheck);
+                    
+                    if (emailCheck.exists) {
+                        console.log('🔧 Email already exists, showing alert');
+                        console.log('⚠️ Email already exists in waitlist');
+                        // alert('Este email ya está registrado en nuestra lista de espera.');
+                        return;
+                    }
+                    
+                    console.log('🔧 Adding to waitlist...');
+                    // Add to waitlist
+                    const result = await addToWaitlist(email);
+                    console.log('🔧 Waitlist result:', result);
+                    
+                    if (result.success) {
+                        console.log('🔧 Success! Showing notification');
+                        showSuccessNotification();
+                        form.reset();
+                    } else {
+                        console.log('🔧 Error in result:', result.error);
+                        alert('Error al registrarse: ' + result.error);
+                    }
+                } catch (error) {
+                    console.error('❌ Exception caught:', error);
+                    alert('Error al registrarse. Por favor, inténtalo de nuevo.');
+                } finally {
+                    // AGGRESSIVE button reset - multiple attempts
+                    console.log('🔧 AGGRESSIVE RESET STARTING');
+                    
+                    // Method 1: Direct reference
+                    if (button) {
+                        button.innerHTML = originalText;
+                        button.disabled = false;
+                        console.log('🔧 Method 1: Direct reference reset');
+                    }
+                    
+                    // Method 2: Re-find button
+                    const currentButton = form.querySelector('button');
+                    if (currentButton) {
+                        currentButton.innerHTML = originalText;
+                        currentButton.disabled = false;
+                        console.log('🔧 Method 2: Re-found button reset');
+                    }
+                    
+                    // Method 3: Force reset with timeout
+                    setTimeout(() => {
+                        const timeoutButton = form.querySelector('button');
+                        if (timeoutButton) {
+                            timeoutButton.innerHTML = originalText;
+                            timeoutButton.disabled = false;
+                            console.log('🔧 Method 3: Timeout reset applied');
+                        }
+                    }, 50);
+                    
+                    // Method 4: Force reset with longer timeout
+                    setTimeout(() => {
+                        const timeoutButton2 = form.querySelector('button');
+                        if (timeoutButton2) {
+                            timeoutButton2.innerHTML = originalText;
+                            timeoutButton2.disabled = false;
+                            console.log('🔧 Method 4: Long timeout reset applied');
+                        }
+                    }, 200);
+                    
+                    // Reset submission flag
+                    isSubmitting = false;
+                    console.log('🔧 AGGRESSIVE RESET COMPLETE');
+                }
+            }, 100); // Small delay to ensure button state is set
+        }
+
+        function joinFinalWaitlist(event) {
+            event.preventDefault();
+            
+            // Prevent multiple submissions with time check
+            const currentTime = Date.now();
+            if (isSubmitting || (currentTime - lastSubmissionTime) < 3000 || buttonLocked) {
+                console.log('🔧 Already submitting, too soon, or button locked - ignoring submission');
+                return;
+            }
+            
+            isSubmitting = true;
+            lastSubmissionTime = currentTime;
+            console.log('🚀 Final form submitted!');
+            const form = event.target;
+            const email = form.querySelector('input[type="email"]').value;
+            const button = form.querySelector('button');
+            const originalText = button.innerHTML;
+            
+            console.log('🔧 Original button text:', originalText);
+            
+            // Show loading state
+            button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Procesando...';
+            button.disabled = true;
+            
+            console.log('🔧 Button set to loading state');
+            
+            // Use setTimeout to simulate async behavior and ensure button reset
+            setTimeout(async () => {
+                try {
+                    console.log('🔧 Starting email check...');
+                    // Check if email already exists
+                    const emailCheck = await checkEmailExists(email);
+                    console.log('🔧 Email check result:', emailCheck);
+                    
+                    if (emailCheck.exists) {
+                        console.log('🔧 Email already exists, showing alert');
+                        console.log('⚠️ Email already exists in waitlist');
+                        // alert('Este email ya está registrado en nuestra lista de espera.');
+                        return;
+                    }
+                    
+                    console.log('🔧 Adding to waitlist...');
+                    // Add to waitlist
+                    const result = await addToWaitlist(email);
+                    console.log('🔧 Waitlist result:', result);
+                    
+                    if (result.success) {
+                        console.log('🔧 Success! Showing notification');
+                        showSuccessNotification();
+                        form.reset();
+                    } else {
+                        console.log('🔧 Error in result:', result.error);
+                        alert('Error al registrarse: ' + result.error);
+                    }
+                } catch (error) {
+                    console.error('❌ Exception caught:', error);
+                    alert('Error al registrarse. Por favor, inténtalo de nuevo.');
+                } finally {
+                    // AGGRESSIVE button reset - multiple attempts
+                    console.log('🔧 AGGRESSIVE RESET STARTING (Final Form)');
+                    
+                    // Method 1: Direct reference
+                    if (button) {
+                        button.innerHTML = originalText;
+                        button.disabled = false;
+                        console.log('🔧 Method 1: Direct reference reset (Final)');
+                    }
+                    
+                    // Method 2: Re-find button
+                    const currentButton = form.querySelector('button');
+                    if (currentButton) {
+                        currentButton.innerHTML = originalText;
+                        currentButton.disabled = false;
+                        console.log('🔧 Method 2: Re-found button reset (Final)');
+                    }
+                    
+                    // Method 3: Force reset with timeout
+                    setTimeout(() => {
+                        const timeoutButton = form.querySelector('button');
+                        if (timeoutButton) {
+                            timeoutButton.innerHTML = originalText;
+                            timeoutButton.disabled = false;
+                            console.log('🔧 Method 3: Timeout reset applied (Final)');
+                        }
+                    }, 50);
+                    
+                    // Method 4: Force reset with longer timeout
+                    setTimeout(() => {
+                        const timeoutButton2 = form.querySelector('button');
+                        if (timeoutButton2) {
+                            timeoutButton2.innerHTML = originalText;
+                            timeoutButton2.disabled = false;
+                            console.log('🔧 Method 4: Long timeout reset applied (Final)');
+                        }
+                    }, 200);
+                    
+                    // Reset submission flag
+                    isSubmitting = false;
+                    console.log('🔧 AGGRESSIVE RESET COMPLETE (Final)');
+                }
+            }, 100); // Small delay to ensure button state is set
+        }
+
+        // Success notification function
+        function showSuccessNotification() {
+            const notification = document.getElementById('successNotification');
+            notification.classList.add('show');
+            
+            // LOCK BUTTONS AND FORCE RESET
+            buttonLocked = true;
+            console.log('🔧 SUCCESS: LOCKING buttons and forcing reset');
+            const allButtons = document.querySelectorAll('button[type="submit"]');
+            allButtons.forEach(btn => {
+                const form = btn.closest('form');
+                if (form && form.id === 'heroForm') {
+                    btn.innerHTML = 'Unirse';
+                } else if (form && form.id === 'finalForm') {
+                    btn.innerHTML = '¡Quiero empezar!';
+                }
+                btn.disabled = false;
+                btn.style.pointerEvents = 'auto';
+                // Add a data attribute to mark as locked
+                btn.setAttribute('data-locked', 'true');
+            });
+            
+            // Auto-hide after 6 seconds
+            setTimeout(() => {
+                closeNotification();
+            }, 6000);
+            
+            // FINAL SAFETY NET: Force reset after notification shows
+            setTimeout(() => {
+                console.log('🔧 FINAL SAFETY: Double-checking button states');
+                const allButtons = document.querySelectorAll('button[type="submit"]');
+                allButtons.forEach(btn => {
+                    if (btn.innerHTML.includes('Procesando') || btn.getAttribute('data-locked') === 'true') {
+                        console.log('🔧 FINAL SAFETY: Found stuck/locked button, forcing reset');
+                        const form = btn.closest('form');
+                        if (form && form.id === 'heroForm') {
+                            btn.innerHTML = 'Unirse';
+                        } else if (form && form.id === 'finalForm') {
+                            btn.innerHTML = '¡Quiero empezar!';
+                        }
+                        btn.disabled = false;
+                        btn.style.pointerEvents = 'auto';
+                    }
+                });
+            }, 500);
+            
+            // NUCLEAR OVERRIDE: Completely prevent any button changes
+            const observer = new MutationObserver((mutations) => {
+                mutations.forEach((mutation) => {
+                    if (mutation.type === 'childList' || mutation.type === 'attributes') {
+                        const target = mutation.target;
+                        if (target.tagName === 'BUTTON' && target.innerHTML.includes('Procesando')) {
+                            console.log('🔧 NUCLEAR OVERRIDE: Detected button change, forcing reset');
+                            const form = target.closest('form');
+                            if (form && form.id === 'heroForm') {
+                                target.innerHTML = 'Unirse';
+                            } else if (form && form.id === 'finalForm') {
+                                target.innerHTML = '¡Quiero empezar!';
+                            }
+                            target.disabled = false;
+                            target.style.pointerEvents = 'auto';
+                        }
+                    }
+                });
+            });
+            
+            // Observe all buttons for changes
+            const allButtons = document.querySelectorAll('button[type="submit"]');
+            allButtons.forEach(btn => {
+                observer.observe(btn, { 
+                    childList: true, 
+                    subtree: true, 
+                    attributes: true, 
+                    attributeFilter: ['innerHTML', 'disabled'] 
+                });
+            });
+        }
+
+        function closeNotification() {
+            const notification = document.getElementById('successNotification');
+            notification.classList.remove('show');
+        }
+
+        // Make closeNotification globally available
+        window.closeNotification = closeNotification;
+
+        // Set up form event listeners when DOM is ready
+        document.addEventListener('DOMContentLoaded', function() {
+            const heroForm = document.getElementById('heroForm');
+            const finalForm = document.getElementById('finalForm');
+            
+            console.log('🔍 Hero form found:', heroForm);
+            console.log('🔍 Final form found:', finalForm);
+            
+            if (heroForm) {
+                heroForm.addEventListener('submit', joinWaitingList);
+            }
+            
+            if (finalForm) {
+                finalForm.addEventListener('submit', joinFinalWaitlist);
+            }
+            
+            // NUCLEAR OPTION: Force reset every 5 seconds (less aggressive)
+            setInterval(() => {
+                const allButtons = document.querySelectorAll('button[type="submit"]');
+                allButtons.forEach(btn => {
+                    if (btn.innerHTML.includes('Procesando') && btn.disabled) {
+                        console.log('🔧 NUCLEAR RESET: Forcing stuck button reset');
+                        // Force reset based on form
+                        const form = btn.closest('form');
+                        if (form && form.id === 'heroForm') {
+                            btn.innerHTML = 'Unirse';
+                        } else if (form && form.id === 'finalForm') {
+                            btn.innerHTML = '¡Quiero empezar!';
+                        }
+                        btn.disabled = false;
+                        btn.style.pointerEvents = 'auto';
+                        console.log('🔧 NUCLEAR RESET: Button forced to reset');
+                    }
+                });
+            }, 5000); // Check every 5 seconds
+            
+            // IMMEDIATE RESET: Force reset after 1 second
+            setTimeout(() => {
+                const allButtons = document.querySelectorAll('button[type="submit"]');
+                allButtons.forEach(btn => {
+                    if (btn.innerHTML.includes('Procesando')) {
+                        console.log('🔧 IMMEDIATE RESET: Forcing button reset after 1 second');
+                        const form = btn.closest('form');
+                        if (form && form.id === 'heroForm') {
+                            btn.innerHTML = 'Unirse';
+                        } else if (form && form.id === 'finalForm') {
+                            btn.innerHTML = '¡Quiero empezar!';
+                        }
+                        btn.disabled = false;
+                        btn.style.pointerEvents = 'auto';
+                    }
+                });
+            }, 1000);
+        });
+    </script>
+    <script src="script.js?v=7.1" defer></script>
+</head>
+<body>
     <!-- Success Notification Popup -->
     <div id="successNotification" class="success-notification">
         <div class="notification-content">
@@ -217,6 +591,7 @@
             </button>
         </div>
     </div>
+
 
     <!-- Navigation -->
     <nav class="navbar">
@@ -496,6 +871,8 @@
         </div>
     </section>
 
+
+
     <!-- Final CTA Section -->
     <section id="waitlist" class="final-cta-section">
         <!-- Floating Elements -->
@@ -584,4 +961,4 @@
         <p>¡Excelente! Ya formas parte de la comunidad FinnVest. Tu futuro financiero está más cerca.</p>
     </div>
 </body>
-</html>
+</html> 
