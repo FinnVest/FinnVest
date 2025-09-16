@@ -300,12 +300,23 @@ document.addEventListener('DOMContentLoaded', function() {
     const heroForm = document.getElementById('heroForm');
     const finalForm = document.getElementById('finalForm');
     
+    console.log('🔍 Hero form found:', heroForm);
+    console.log('🔍 Final form found:', finalForm);
+    console.log('🔍 joinWaitingList function:', typeof joinWaitingList);
+    console.log('🔍 joinFinalWaitlist function:', typeof joinFinalWaitlist);
+    
     if (heroForm) {
-        heroForm.addEventListener('submit', joinWaitingList);
+        heroForm.addEventListener('submit', function(event) {
+            console.log('🚀 Hero form submitted!');
+            joinWaitingList(event);
+        });
     }
     
     if (finalForm) {
-        finalForm.addEventListener('submit', joinFinalWaitlist);
+        finalForm.addEventListener('submit', function(event) {
+            console.log('🚀 Final form submitted!');
+            joinFinalWaitlist(event);
+        });
     }
 
     // Add hover effects for interactive elements
