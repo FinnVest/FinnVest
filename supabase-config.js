@@ -5,8 +5,14 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 // Initialize Supabase client
 const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+// Debug: Check if Supabase is loaded
+console.log('🔧 Supabase client initialized:', supabase);
+console.log('🔧 Supabase URL:', SUPABASE_URL);
+
 // Function to add email to waitlist
 async function addToWaitlist(email) {
+    console.log('🚀 Attempting to add email to waitlist:', email);
+    
     try {
         const { data, error } = await supabase
             .from('waitlist')
@@ -19,14 +25,17 @@ async function addToWaitlist(email) {
                 }
             ]);
 
+        console.log('📊 Supabase response:', { data, error });
+
         if (error) {
-            console.error('Error adding to waitlist:', error);
+            console.error('❌ Error adding to waitlist:', error);
             return { success: false, error: error.message };
         }
 
+        console.log('✅ Successfully added to waitlist:', data);
         return { success: true, data };
     } catch (error) {
-        console.error('Error:', error);
+        console.error('❌ Exception in addToWaitlist:', error);
         return { success: false, error: error.message };
     }
 }
