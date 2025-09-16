@@ -141,7 +141,7 @@ document.addEventListener('DOMContentLoaded', function() {
     window.addEventListener('scroll', throttle(handleParallax, 16));
 
     // Form submission handlers
-    function joinWaitingList(event) {
+    async function joinWaitingList(event) {
         event.preventDefault();
         const form = event.target;
         const email = form.querySelector('input[type="email"]').value;
@@ -152,19 +152,35 @@ document.addEventListener('DOMContentLoaded', function() {
         button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Procesando...';
         button.disabled = true;
         
-        // Simulate API call
-        setTimeout(() => {
-            // Show success notification
-            showSuccessNotification();
+        try {
+            // Check if email already exists
+            const emailCheck = await checkEmailExists(email);
+            if (emailCheck.exists) {
+                alert('Este email ya está registrado en nuestra lista de espera.');
+                button.innerHTML = originalText;
+                button.disabled = false;
+                return;
+            }
             
-            // Reset form
-            form.reset();
+            // Add to waitlist
+            const result = await addToWaitlist(email);
+            
+            if (result.success) {
+                showSuccessNotification();
+                form.reset();
+            } else {
+                alert('Error al registrarse: ' + result.error);
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Error al registrarse. Por favor, inténtalo de nuevo.');
+        } finally {
             button.innerHTML = originalText;
             button.disabled = false;
-        }, 1500);
+        }
     }
 
-    function joinFinalWaitlist(event) {
+    async function joinFinalWaitlist(event) {
         event.preventDefault();
         const form = event.target;
         const email = form.querySelector('input[type="email"]').value;
@@ -175,16 +191,32 @@ document.addEventListener('DOMContentLoaded', function() {
         button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Procesando...';
         button.disabled = true;
         
-        // Simulate API call
-        setTimeout(() => {
-            // Show success notification
-            showSuccessNotification();
+        try {
+            // Check if email already exists
+            const emailCheck = await checkEmailExists(email);
+            if (emailCheck.exists) {
+                alert('Este email ya está registrado en nuestra lista de espera.');
+                button.innerHTML = originalText;
+                button.disabled = false;
+                return;
+            }
             
-            // Reset form
-            form.reset();
+            // Add to waitlist
+            const result = await addToWaitlist(email);
+            
+            if (result.success) {
+                showSuccessNotification();
+                form.reset();
+            } else {
+                alert('Error al registrarse: ' + result.error);
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Error al registrarse. Por favor, inténtalo de nuevo.');
+        } finally {
             button.innerHTML = originalText;
             button.disabled = false;
-        }, 1500);
+        }
     }
 
     // Success notification functions
