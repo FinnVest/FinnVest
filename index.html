@@ -11,59 +11,33 @@
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,700;1,9..40,400;1,9..40,500;1,9..40,600;1,9..40,700&family=Inter:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&family=Poppins:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css?v=20.0">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
-        // Supabase Configuration
-        const SUPABASE_URL = 'https://jrieviopwhgvfjcefbtu.supabase.co';
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpyaWV2aW9wd2hndmZqY2VmYnR1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTc5ODA0NTQsImV4cCI6MjA3MzU1NjQ1NH0.vn9wM16v0CO8QW7NkC5b42jdxExoKpn34SvtBinDLvc';
 
-        // Initialize Supabase client
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-        // Function to add email to waitlist
+        // Function to add email to waitlist via Edge Function
         async function addToWaitlist(email) {
             try {
-                const { data, error } = await supabase
-                    .from('waitlist')
-                    .insert([
-                        { 
-                            email: email.toLowerCase().trim(),
-                            created_at: new Date().toISOString(),
-                            status: 'active',
-                            source: 'website'
-                        }
-                    ]);
+                const response = await fetch('https://jrieviopwhgvfjcefbtu.supabase.co/functions/v1/waitlist-signup', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpyaWV2aW9wd2hndmZqY2VmYnR1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTc5ODA0NTQsImV4cCI6MjA3MzU1NjQ1NH0.vn9wM16v0CO8QW7NkC5b42jdxExoKpn34SvtBinDLvc',
+                    },
+                    body: JSON.stringify({
+                        email: email.toLowerCase().trim()
+                    })
+                });
 
-                if (error) {
-                    console.error('Error adding to waitlist:', error);
-                    return { success: false, error: error.message };
+                const result = await response.json();
+
+                if (!response.ok) {
+                    console.error('Edge Function error:', result);
+                    return { success: false, error: result.error || `Failed to add to waitlist (Status: ${response.status})` };
                 }
 
-                return { success: true, data };
+                return { success: true, data: result };
             } catch (error) {
                 console.error('Error:', error);
-                return { success: false, error: error.message };
-            }
-        }
-
-        // Function to check if email already exists
-        async function checkEmailExists(email) {
-            try {
-                const { data, error } = await supabase
-                    .from('waitlist')
-                    .select('email')
-                    .eq('email', email.toLowerCase().trim())
-                    .single();
-
-                if (error && error.code !== 'PGRST116') {
-                    console.error('Error checking email:', error);
-                    return { exists: false, error: error.message };
-                }
-
-                return { exists: !!data, error: null };
-            } catch (error) {
-                console.error('Error:', error);
-                return { exists: false, error: error.message };
+                return { success: false, error: 'Network error. Please try again.' };
             }
         }
 
@@ -90,21 +64,19 @@
             // Process submission
             setTimeout(async () => {
                 try {
-                    // Check if email already exists
-                    const emailCheck = await checkEmailExists(email);
-                    if (emailCheck.exists) {
-                        alert('Este email ya está registrado en nuestra lista de espera.');
-                        return;
-                    }
-                    
-                    // Add to waitlist
+                    // Add to waitlist via Edge Function
                     const result = await addToWaitlist(email);
                     
                     if (result.success) {
                         showSuccessNotification();
                         form.reset();
                     } else {
-                        alert('Error al registrarse: ' + result.error);
+                        // Handle specific error messages from Edge Function
+                        if (result.error.includes('already on the list')) {
+                            alert('Este email ya está registrado en nuestra lista de espera.');
+                        } else {
+                            alert('Error al registrarse: ' + result.error);
+                        }
                     }
                 } catch (error) {
                     console.error('Error:', error);
@@ -138,21 +110,19 @@
             // Process submission
             setTimeout(async () => {
                 try {
-                    // Check if email already exists
-                    const emailCheck = await checkEmailExists(email);
-                    if (emailCheck.exists) {
-                        alert('Este email ya está registrado en nuestra lista de espera.');
-                        return;
-                    }
-                    
-                    // Add to waitlist
+                    // Add to waitlist via Edge Function
                     const result = await addToWaitlist(email);
                     
                     if (result.success) {
                         showSuccessNotification();
                         form.reset();
                     } else {
-                        alert('Error al registrarse: ' + result.error);
+                        // Handle specific error messages from Edge Function
+                        if (result.error.includes('already on the list')) {
+                            alert('Este email ya está registrado en nuestra lista de espera.');
+                        } else {
+                            alert('Error al registrarse: ' + result.error);
+                        }
                     }
                 } catch (error) {
                     console.error('Error:', error);
