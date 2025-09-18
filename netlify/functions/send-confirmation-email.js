@@ -1,7 +1,6 @@
-const { Resend } = require('resend');
-
 // Initialize Resend with your API key
-const resend = new Resend(process.env.RESEND_API_KEY);
+const resend = require('resend').Resend;
+const resendClient = new resend(process.env.RESEND_API_KEY);
 
 exports.handler = async (event, context) => {
   // Handle CORS preflight requests
@@ -62,7 +61,7 @@ exports.handler = async (event, context) => {
     }
 
     // Send confirmation email using Resend
-    const emailResult = await resend.emails.send({
+    const emailResult = await resendClient.emails.send({
       from: 'FinnVest <onboarding@resend.dev>',
       to: [normalizedEmail],
       subject: "¡Estás en la lista! 🎉",
