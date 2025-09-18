@@ -1,5 +1,5 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
-import { Resend } from 'https://esm.sh/resend@2.0.0'
+import { Resend } from 'resend'
 
 // CORS headers to allow requests from any origin
 const corsHeaders = {
@@ -112,24 +112,25 @@ Deno.serve(async (req) => {
       const emailResult = await resend.emails.send({
         from: 'FinnVest <onboarding@resend.dev>',
         to: [normalizedEmail],
-        subject: "You're on the list! 🎉",
+        subject: "¡Estás en la lista! 🎉",
+        replyTo: 'finnvest.edu@gmail.com',
         html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
-            <h2 style="color: #333; text-align: center;">Welcome to FinnVest! 🚀</h2>
-            <p>Hi there,</p>
-            <p>Thanks for joining the waiting list for <strong>FinnVest</strong>! We're excited to have you on board.</p>
-            <p>We'll be in touch soon when you get access to our platform where you can learn to invest without fear.</p>
-            <p>In the meantime, follow us on social media to stay updated:</p>
+            <h2 style="color: #333; text-align: center;">¡Bienvenido a FinnVest! 🚀</h2>
+            <p>¡Hola!</p>
+            <p>¡Gracias por unirte a la lista de espera de <strong>FinnVest</strong>! Estamos emocionados de tenerte a bordo.</p>
+            <p>Te contactaremos pronto cuando tengas acceso a nuestra plataforma donde podrás aprender a invertir sin miedo.</p>
+            <p>Mientras tanto, síguenos en redes sociales para mantenerte actualizado:</p>
             <ul>
               <li>Instagram: @finnvest_edu</li>
               <li>LinkedIn: FinnVest Edu</li>
               <li>Facebook: FinnVest</li>
             </ul>
-            <p>Best regards,<br>The FinnVest Team</p>
+            <p>Saludos cordiales,<br>El Equipo de FinnVest</p>
             <hr style="margin: 30px 0; border: none; border-top: 1px solid #eee;">
             <p style="font-size: 12px; color: #666; text-align: center;">
-              You're receiving this email because you signed up for our waitlist. 
-              If you didn't sign up, you can safely ignore this email.
+              Estás recibiendo este email porque te registraste en nuestra lista de espera. 
+              Si no te registraste, puedes ignorar este email de forma segura.
             </p>
           </div>
         `,
@@ -137,16 +138,22 @@ Deno.serve(async (req) => {
 
       // Log email sending result for debugging
       console.log('Email sent successfully:', emailResult)
+      console.log('Email sent to:', normalizedEmail)
+      console.log('Email ID:', emailResult.data?.id)
     } catch (emailError) {
       // Log email error but don't fail the entire request
-      console.error('Failed to send confirmation email:', emailError)
+      console.error('Failed to send confirmation email to:', normalizedEmail)
+      console.error('Email error details:', JSON.stringify(emailError, null, 2))
+      console.error('Email error message:', emailError.message)
+      console.error('Email error code:', emailError.code)
+      console.error('Email error status:', emailError.status)
       // Continue with success response even if email fails
     }
 
     // Return success response
     return new Response(
       JSON.stringify({ 
-        message: 'Successfully added to waitlist! Check your email for confirmation.',
+        message: '¡Te has unido exitosamente a la lista de espera! Revisa tu email para confirmar.',
         email: normalizedEmail
       }), 
       { 
@@ -167,3 +174,4 @@ Deno.serve(async (req) => {
     )
   }
 })
+

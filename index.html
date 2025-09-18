@@ -13,31 +13,56 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script>
 
-        // Function to add email to waitlist via Edge Function
+        // Function to add email to waitlist via Supabase
         async function addToWaitlist(email) {
             try {
-                const response = await fetch('https://jrieviopwhgvfjcefbtu.supabase.co/functions/v1/waitlist-signup', {
+                // First, add to Supabase database
+                const supabaseResponse = await fetch('https://jrieviopwhgvfjcefbtu.supabase.co/rest/v1/waitlist', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                         'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpyaWV2aW9wd2hndmZqY2VmYnR1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTc5ODA0NTQsImV4cCI6MjA3MzU1NjQ1NH0.vn9wM16v0CO8QW7NkC5b42jdxExoKpn34SvtBinDLvc',
+                        'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpyaWV2aW9wd2hndmZqY2VmYnR1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTc5ODA0NTQsImV4cCI6MjA3MzU1NjQ1NH0.vn9wM16v0CO8QW7NkC5b42jdxExoKpn34SvtBinDLvc'
+                    },
+                    body: JSON.stringify({
+                        email: email.toLowerCase().trim(),
+                        created_at: new Date().toISOString(),
+                        status: 'active',
+                        source: 'website'
+                    })
+                });
+
+                if (!supabaseResponse.ok) {
+                    const errorData = await supabaseResponse.json();
+                    if (supabaseResponse.status === 409) {
+                        return { success: false, error: 'Este email ya está registrado en nuestra lista de espera.' };
+                    }
+                    return { success: false, error: 'Error al guardar en la base de datos.' };
+                }
+
+                // Then send confirmation email via Netlify Function
+                const emailResponse = await fetch('/.netlify/functions/send-confirmation-email', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
                         email: email.toLowerCase().trim()
                     })
                 });
 
-                const result = await response.json();
+                const emailResult = await emailResponse.json();
 
-                if (!response.ok) {
-                    console.error('Edge Function error:', result);
-                    return { success: false, error: result.error || `Failed to add to waitlist (Status: ${response.status})` };
+                if (!emailResponse.ok) {
+                    console.error('Email error:', emailResult);
+                    // Still return success since email was saved to database
+                    return { success: true, data: { message: 'Email guardado, pero error al enviar confirmación.' } };
                 }
 
-                return { success: true, data: result };
+                return { success: true, data: emailResult };
             } catch (error) {
                 console.error('Error:', error);
-                return { success: false, error: 'Network error. Please try again.' };
+                return { success: false, error: 'Error de red. Por favor, inténtalo de nuevo.' };
             }
         }
 
